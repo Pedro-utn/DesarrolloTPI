@@ -2,17 +2,15 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
 
-class Location {
-  @Column('float')
-  lat: number;
 
-  @Column('float')
-  lng: number;
-}
+@Entity()
+export class Location {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-class Address {
   @Column()
   street: string;
 
@@ -22,8 +20,13 @@ class Address {
   @Column()
   cityId: number;
 
-  @Column(() => Location)
-  location: Location;
+  @Column('float')
+  lat: number;
+
+  @Column('float')
+  lng: number;
+
+
 }
 
 @Entity()
@@ -37,15 +40,17 @@ export class Order {
   @Column()
   restaurantId: number;
 
-  @Column("int", { array: true })
+  @Column('int', { array: true })
   products: number[];
 
-  @Column(() => Address)
-  location: Address;
+  location: Location;
+
+  @Column()
+  locationId: number;
 
   @Column({ default: 'pending' })
   status: string;
 
-  @Column({ type: 'json', nullable: true })
-  delivery: any; // Podés usar una clase embebida si sabés su forma
+  @Column({ nullable: true })
+  delivery: number;
 }
