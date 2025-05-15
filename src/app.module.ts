@@ -12,7 +12,7 @@ import { OrderModule } from './Orders/order.module';
       port: 5432,
       username: 'postgres',
       password: '1234',
-      database: 'postgres',
+      database: 'ordenycompra',
       autoLoadEntities: true,
       synchronize: true,
     }),
