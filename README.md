@@ -87,7 +87,11 @@ Check out a few resources that may come in handy when working with NestJS:
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
+<<<<<<< HEAD
 ## Stay in touchasdasd
+=======
+## Stay in touch
+>>>>>>> e80defbff6a60ec2f0e4313a2ce4aef20bdbd530
 
 - Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
 - Website - [https://nestjs.com](https://nestjs.com/)
