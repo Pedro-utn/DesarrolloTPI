@@ -19,15 +19,17 @@ CREATE TABLE "order" (
   delivery INTEGER
 );
 
-
-
-
 -- Tabla Payment
---CREATE TABLE "payment" (
-  --id SERIAL PRIMARY KEY,
-  --order_id INTEGER NOT NULL,
---  paymentStatus VARCHAR NOT NULL DEFAULT 'paid',
---  transaction_details JSONB NOT NULL,
-  --payment_method VARCHAR NOT NULL DEFAULT 'MP',
-  --payment_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
---);
+
+CREATE TABLE "payment" (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER NOT NULL,
+  amount FLOAT NOT NULL,
+  method VARCHAR NOT NULL,
+  transaction_transaction_id VARCHAR NOT NULL,
+  transaction_payment_id VARCHAR NOT NULL,
+  transaction_transaction_status VARCHAR NOT NULL,
+  payment_method VARCHAR NOT NULL,
+  payment_time TIMESTAMP NOT NULL
+);
+

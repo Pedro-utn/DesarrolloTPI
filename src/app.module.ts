@@ -2,13 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { OrderModule } from './Orders/order.module'; 
+import { OrderModule } from './Orders/order.module';
+
+import { PaymentsModule } from './Payments/payment.module'; // 👈 Ruta correcta
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({ // KEY DE CONEXION
+    TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost', 
+      host: 'localhost',
       port: 5432,
       username: 'postgres',
       password: '1234',
@@ -16,7 +18,8 @@ import { OrderModule } from './Orders/order.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    OrderModule, 
+    OrderModule,
+    PaymentsModule, // 👈 Agregar esta línea
   ],
   controllers: [AppController],
   providers: [AppService],
