@@ -5,20 +5,24 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
+class RefundDetails {
+  @Column({ nullable: true })
+  refundTransactionId: string;
+
+  @Column({ nullable: true })
+  refundStatus: string;
+}
+
+
 class TransactionDetails {
   @Column()
   transactionId: string;
 
   @Column()
-  paymentStatus: string;
-}
+  paymentId: string;
 
-class RefundDetails {
-  @Column({ nullable: true })
-  refundTransactionId?: string;
-
-  @Column({ nullable: true })
-  refundStatus?: string;
+  @Column()
+  paymentStatus: string; // ← corregido nombre
 }
 
 @Entity()
@@ -29,30 +33,27 @@ export class Payment {
   @Column()
   orderId: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('float')
   amount: number;
 
   @Column()
   method: string;
 
-  @Column(() => TransactionDetails, { prefix: 'transaction_' })
+  @Column(() => TransactionDetails, { prefix: 'transaction' })
   transactionDetails: TransactionDetails;
-
-  @Column(() => RefundDetails, { prefix: 'refund_' })
-  refundDetails?: RefundDetails;
 
   @Column()
   paymentMethod: string;
 
-  @Column({
-    type: 'enum',
-    enum: ['pending', 'paid', 'completed', 'refunded'],
-    default: 'pending'
-  })
-  status: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
+  @Column({ type: 'timestamp' })
   paymentTime: Date;
+
+  @Column({ default: 'paid' })
+  status: string;
+  
+  @Column(() => RefundDetails, { prefix: 'refund' })
+  refundDetails?: RefundDetails;
+  
 
   @Column({ type: 'timestamp', nullable: true })
   refundTime?: Date;

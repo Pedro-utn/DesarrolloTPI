@@ -30,6 +30,9 @@ CREATE TABLE "payment" (
   transaction_payment_id VARCHAR NOT NULL,
   transaction_transaction_status VARCHAR NOT NULL,
   payment_method VARCHAR NOT NULL,
-  payment_time TIMESTAMP NOT NULL
+  payment_time TIMESTAMP NOT NULL,
+  refund_refund_transaction_id VARCHAR,
+  refund_refund_status VARCHAR,
+  refund_time TIMESTAMP
 );
 

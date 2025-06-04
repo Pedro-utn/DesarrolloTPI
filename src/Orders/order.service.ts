@@ -114,6 +114,9 @@ export class OrderService {
     if (updateData.delivery !== undefined) {
       order.delivery = updateData.delivery;
     }
+    if (updateData.id) {
+      order.id = updateData.id;
+    }
     
     return this.orderRepository.save(order);
   }

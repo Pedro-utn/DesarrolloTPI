@@ -21,6 +21,7 @@ export interface RefundPaymentDto {
   reason: string;
 }
 
+
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -28,18 +29,28 @@ export class PaymentsService {
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async create(createPaymentDto: CreatePaymentDto): Promise<Payment> {
+  async create(createPaymentDto: CreatePaymentDto): Promise<any> {
     const payment = this.paymentRepository.create({
       orderId: createPaymentDto.orderId,
       amount: createPaymentDto.amount,
       method: createPaymentDto.method,
       paymentMethod: createPaymentDto.method,
-      transactionDetails: createPaymentDto.transactionDetails,
-      status: createPaymentDto.transactionDetails.paymentStatus === 'completed' ? 'paid' : 'pending',
+      transactionDetails: {
+        transactionId: createPaymentDto.transactionDetails.transactionId,
+        paymentId: `ext_${Date.now()}`,
+        paymentStatus: createPaymentDto.transactionDetails.paymentStatus,
+      },
+      status:
+        createPaymentDto.transactionDetails.paymentStatus === 'completed'
+          ? 'paid'
+          : 'pending',
+      paymentTime: new Date(), 
     });
-    
-    return this.paymentRepository.save(payment);
+  
+    const saved = await this.paymentRepository.save(payment);
+    return this.toResponse(saved);
   }
+  
 
   async findAll(): Promise<Payment[]> {
     return this.paymentRepository.find();
@@ -52,6 +63,24 @@ export class PaymentsService {
     }
     return payment;
   }
+  private toResponse(payment: Payment): any {
+    return {
+      id: payment.id,
+      orderId: payment.orderId,
+      status: payment.status,
+      transactionDetails: {
+        transactionId: payment.transactionDetails.transactionId,
+        paymentStatus: payment.transactionDetails.paymentStatus,
+      },
+      paymentMethod: payment.paymentMethod,
+      paymentTime: payment.paymentTime,
+      ...(payment.status === 'refunded' && payment.refundDetails && {
+        refundDetails: payment.refundDetails,
+        refundTime: payment.refundTime,
+      })
+    };
+  }
+  
 
   async updateStatus(id: number, updateStatusDto: UpdatePaymentStatusDto): Promise<Payment> {
     const payment = await this.findOne(id);
@@ -71,7 +100,7 @@ export class PaymentsService {
     
     payment.status = 'refunded';
     payment.refundDetails = {
-      refundTransactionId,
+      refundTransactionId, 
       refundStatus: 'completed'
     };
     payment.refundTime = new Date();
