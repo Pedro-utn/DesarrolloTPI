@@ -69,16 +69,32 @@ export class OrderService {
     }));
   }
   
-  
-  
-  
+  async findOne(id: number): Promise<any> {
+    const row = await this.orderRepository 
+      .createQueryBuilder('order')
+      .leftJoin('location', 'location', 'order.locationId = location.id')
+      .select(['order.id AS id', 'order.status AS status', 'order.delivery AS delivery', 'location.street AS street', 'location.number AS number', 'location.cityId AS cityId', 'location.lat AS lat', 'location.lng AS lng',])
+      .where('order.id = :id', { id })
+      .getRawOne();
 
-  async findOne(id: number): Promise<Order> {
-    const order = await this.orderRepository.findOne({ where: { id } });
-    if (!order) {
+    if (!row) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
-    return order;
+
+    return {
+      id: row.id,
+      status: row.status,
+      delivery: row.delivery,
+      location: {
+        street: row.street,
+        number: row.number,
+        cityId: row.cityId,
+        location: {
+          lat: parseFloat(row.lat),
+          lng: parseFloat(row.lng),
+        },
+      },
+    };
   }
 
   async update(id: number, updateData: any): Promise<Order> {
