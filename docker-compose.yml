@@ -1,14 +1,50 @@
 version: '3.8'
 
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  postgres-db:
+
 services:
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=ordenycompra
+      - POSTGRES_INITDB_ARGS=--auth-host=md5 --auth-local=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-db:/var/lib/postgresql/data
+    networks:
+      - net
+
   app:
     build: .
     ports:
-      - "3000:3000"  # Mapea el puerto 3000 del host al 3000 del contenedor
+      - "3000:3000"
     volumes:
-      - .:/usr/src/app  # Monta el código fuente para desarrollo en caliente
-      - /usr/src/app/node_modules  # Evita sobrescribir node_modules
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
-    # Reinicia el contenedor si hay cambios (opcional)
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=ordenycompra
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=1234
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - net
     restart: unless-stopped

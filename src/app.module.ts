@@ -10,7 +10,7 @@ import { PaymentsModule } from './Payments/payment.module'; // 👈 Ruta correct
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'db',
       port: 5432,
       username: 'postgres',
       password: '1234',
