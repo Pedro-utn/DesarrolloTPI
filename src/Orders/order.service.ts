@@ -16,12 +16,14 @@ export class OrderService {
   async create(orderData: any): Promise<Order> {
     // Crear primero la locacion
     const locationData = {
-      street: orderData.location.street,
-      number: orderData.location.number,
-      cityId: orderData.location.cityId,
-      lat: orderData.location.location.lat,
-      lng: orderData.location.location.lng,
-    };
+    street: orderData.location.street,
+    number: orderData.location.number,
+    cityId: orderData.location.cityId,
+    lat: orderData.location.coordinates.lat,
+    lng: orderData.location.coordinates.lng,
+  };
+
+
     
     const location = this.locationRepository.create(locationData);
     const savedLocation = await this.locationRepository.save(location);
