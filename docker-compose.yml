@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"  # Mapea el puerto 3000 del host al 3000 del contenedor
+    volumes:
+      - .:/usr/src/app  # Monta el código fuente para desarrollo en caliente
+      - /usr/src/app/node_modules  # Evita sobrescribir node_modules
+    environment:
+      - NODE_ENV=development
+    # Reinicia el contenedor si hay cambios (opcional)
+    restart: unless-stopped
