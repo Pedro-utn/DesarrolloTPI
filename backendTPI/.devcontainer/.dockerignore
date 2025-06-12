@@ -1,0 +1,76 @@
+# Dependencias
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de construcción
+**/dist
+**/build
+
+# Variables de entorno (mantener solo .env.example si existe)
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+
+# Control de versiones
+**/.git
+**/.gitignore
+
+# IDEs y editores
+**/.vscode
+**/.idea
+*.swp
+*.swo
+*~
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+**/logs
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de prueba
+**/coverage
+**/.nyc_output
+**/test-results
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Archivos específicos de NestJS
+**/nest-cli.json
+**/tsconfig.build.json
+**/tsconfig.json
+**/.eslintrc.js
+**/.prettierrc
+
+# Archivos de testing
+**/test
+**/*.spec.ts
+**/*.e2e-spec.ts
+**/jest.config.js
+
+# Documentación
+**/README.md
+**/docs
+
+# Archivos de upload/storage (si los hay)
+**/uploads
+**/storage
+
+# Base de datos local (si usas SQLite)
+**/*.db
+**/*.sqlite
+
+# Archivos de migración ya aplicados (opcional, depende de tu setup)
+# **/migrations

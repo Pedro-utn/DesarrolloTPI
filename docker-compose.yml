@@ -6,7 +6,7 @@ volumes:
   postgres-db:
 
 services:
-  db:
+  database:
     image: postgres:alpine
     environment:
       - POSTGRES_PASSWORD=1234
@@ -26,23 +26,36 @@ services:
     networks:
       - net
 
-  app:
-    build: .
+  backend:
+    build: 
+      context: ./backendTPI
+      dockerfile: ./.devcontainer/dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/app
+      - ./backendTPI:/usr/src/app
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
-      - DATABASE_HOST=db
+      - DATABASE_HOST=database
       - DATABASE_PORT=5432
       - DATABASE_NAME=ordenycompra
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=1234
     depends_on:
-      db:
+      database:
         condition: service_healthy
     networks:
       - net
     restart: unless-stopped
+    
+  frontend:
+    build:
+      context: ./frontendTPI/.devcontainer
+      dockerfile: dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - net

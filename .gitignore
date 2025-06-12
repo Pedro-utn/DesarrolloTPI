@@ -1,56 +1,51 @@
-# compiled output
-/dist
-/node_modules
-/build
+# === BACKEND IGNORE ===
+/backendTPI/dist/
+/backendTPI/node_modules/
+/backendTPI/build/
 
-# Logs
-logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+/backendTPI/logs
+/backendTPI/*.log
+/backendTPI/npm-debug.log*
+/backendTPI/pnpm-debug.log*
+/backendTPI/yarn-debug.log*
+/backendTPI/yarn-error.log*
+/backendTPI/lerna-debug.log*
 
-# OS
-.DS_Store
+/backendTPI/.DS_Store
+/backendTPI/coverage
+/backendTPI/.nyc_output
 
-# Tests
-/coverage
-/.nyc_output
+/backendTPI/.idea
+/backendTPI/.project
+/backendTPI/.classpath
+/backendTPI/.c9/
+/backendTPI/*.launch
+/backendTPI/.settings/
+/backendTPI/*.sublime-workspace
 
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+/backendTPI/.vscode/*
+!/backendTPI/.vscode/settings.json
+!/backendTPI/.vscode/tasks.json
+!/backendTPI/.vscode/launch.json
+!/backendTPI/.vscode/extensions.json
 
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+/backendTPI/.env
+/backendTPI/.env.development.local
+/backendTPI/.env.test.local
+/backendTPI/.env.production.local
+/backendTPI/.env.local
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+/backendTPI/.temp
+/backendTPI/.tmp
 
-# temp directory
-.temp
-.tmp
+/backendTPI/pids
+/backendTPI/*.pid
+/backendTPI/*.seed
+/backendTPI/*.pid.lock
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+/backendTPI/report.*.json
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+# === FRONTEND IGNORE ===
+/frontendTPI/frontend/node_modules/
+/frontendTPI/frontend/dist/
+/frontendTPI/frontend/.angular
