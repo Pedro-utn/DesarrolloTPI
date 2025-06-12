@@ -1,6 +1,11 @@
 # frontend/Dockerfile
 FROM node:18-alpine as builder
+USER node  
 WORKDIR /app
+
+# Añade estas líneas para instalar las librerías C++ necesarias
+# `libstdc++` es crucial, y `libc6-compat` a menudo resuelve problemas de compatibilidad en Alpine.
+RUN apk add --no-cache libstdc++ libc6-compat 
 
 # Copiar package*.json desde el directorio padre (.devcontainer -> frontendTPI)
 COPY ../package*.json ./
@@ -16,8 +21,6 @@ RUN npm run build --prod
 
 # Etapa de producción con nginx
 FROM nginx:alpine
-
-
 
 # Exponer puerto 80 (nginx por defecto)
 EXPOSE 80
