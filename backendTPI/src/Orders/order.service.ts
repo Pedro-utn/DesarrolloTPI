@@ -13,9 +13,26 @@ export class OrderService {
     private locationRepository: Repository<Location>,
   ) {}
 
-  async create(orderData: any): Promise<Order> {
-    // Crear primero la locacion
-    const locationData = {
+  private formatOrderResponse(order: Order, location: Location): any {
+  return {
+    id: order.id,
+    status: order.status,
+    delivery: order.delivery,
+    location: {
+      street: location.street,
+      number: location.number,
+      cityId: location.cityId,
+      coordinates: {
+        lat: parseFloat(location.lat as any),
+        lng: parseFloat(location.lng as any),
+      },
+    },
+  };
+}
+
+
+  async create(orderData: any): Promise<any> {
+  const locationData = {
     street: orderData.location.street,
     number: orderData.location.number,
     cityId: orderData.location.cityId,
@@ -23,21 +40,26 @@ export class OrderService {
     lng: orderData.location.coordinates.lng,
   };
 
+  const location = this.locationRepository.create(locationData);
+  const savedLocation = await this.locationRepository.save(location);
 
-    
-    const location = this.locationRepository.create(locationData);
-    const savedLocation = await this.locationRepository.save(location);
-    
-    // Crear la orden con la ubicación
-    const order = this.orderRepository.create({
-      userId: orderData.userId,
-      restaurantId: orderData.restaurantId,
-      products: orderData.products,
-      locationId: savedLocation.id,
-    });
-    
-    return this.orderRepository.save(order);
+  const order = this.orderRepository.create({
+    userId: orderData.userId,
+    restaurantId: orderData.restaurantId,
+    products: orderData.products,
+    locationId: savedLocation.id,
+  });
+
+  const savedOrder = await this.orderRepository.save(order);
+
+  const fullLocation = await this.locationRepository.findOneBy({ id: savedLocation.id });
+  if (!fullLocation) {
+    throw new NotFoundException(`Location with ID ${savedLocation.id} not found`);
   }
+
+  return this.formatOrderResponse(savedOrder, fullLocation);
+}
+
 
   async findAll(): Promise<any[]> {
     const rows = await this.orderRepository
@@ -55,20 +77,22 @@ export class OrderService {
       ])
       .getRawMany();
   
-    return rows.map(row => ({
-      id: row.id,
-      status: row.status,
-      delivery: row.delivery,
-      location: {
+    return rows.map(row =>
+      this.formatOrderResponse(
+      {
+        id: row.id,
+        status: row.status,
+        delivery: row.delivery,
+      } as Order,
+      {
         street: row.street,
         number: row.number,
         cityId: row.cityId,
-        location: {
-          lat: parseFloat(row.lat),
-          lng: parseFloat(row.lng),
-        },
-      },
-    }));
+        lat: row.lat,
+        lng: row.lng,
+      } as Location
+      )
+    );
   }
   
   async findOne(id: number): Promise<any> {
@@ -83,20 +107,21 @@ export class OrderService {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
 
-    return {
-      id: row.id,
-      status: row.status,
-      delivery: row.delivery,
-      location: {
+    return this.formatOrderResponse(
+      {
+        id: row.id,
+        status: row.status,
+        delivery: row.delivery,
+      } as Order,
+      {
         street: row.street,
         number: row.number,
         cityId: row.cityId,
-        location: {
-          lat: parseFloat(row.lat),
-          lng: parseFloat(row.lng),
-        },
-      },
-    };
+        lat: row.lat,
+        lng: row.lng,
+      } as Location
+    );
+
   }
 
   async update(id: number, updateData: any): Promise<Order> {
