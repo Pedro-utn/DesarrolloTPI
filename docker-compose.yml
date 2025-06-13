@@ -55,8 +55,8 @@ services:
     
   frontend:
     build:
-      context: ./frontendTPI/.devcontainer
-      dockerfile: dockerfile
+      context: ./frontendTPI/
+      dockerfile: ./.devcontainer/dockerfile
     ports:
       - "4200:80"
     volumes:

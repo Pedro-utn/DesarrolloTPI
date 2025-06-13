@@ -1,0 +1,34 @@
+# Node dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Angular build output
+dist
+out-tsc
+coverage
+
+# Environment and config files (opcional)
+.env
+.env.*
+
+# IDE / Editor config
+.vscode
+.idea
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker internals
+docker-compose*
+.dockerignore
+
+# Excluir tu config local si no es parte del build
+.devcontainer/*
+!/.devcontainer/dockerfile  # ⚠️ Incluir el Dockerfile si está allí

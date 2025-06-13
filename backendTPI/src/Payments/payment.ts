@@ -1,37 +1,24 @@
+// payment.ts
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
+  Column,
+  OneToOne,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Order } from '../Orders/order';
+import { TransactionDetail } from './transaction_detail';
+import { RefundDetail } from './refund_detail';
 
-class RefundDetails {
-  @Column({ nullable: true })
-  refundTransactionId: string;
-
-  @Column({ nullable: true })
-  refundStatus: string;
-}
-
-
-class TransactionDetails {
-  @Column()
-  transactionId: string;
-
-  @Column()
-  paymentId: string;
-
-  @Column()
-  paymentStatus: string; // ← corregido nombre
-}
-
-@Entity()
+@Entity('payment')
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  orderId: number;
+  @ManyToOne(() => Order)
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
 
   @Column('float')
   amount: number;
@@ -39,22 +26,16 @@ export class Payment {
   @Column()
   method: string;
 
-  @Column(() => TransactionDetails, { prefix: 'transaction' })
-  transactionDetails: TransactionDetails;
+  // Relación OneToOne con TransactionDetail
+  @OneToOne(() => TransactionDetail, (transactionDetail) => transactionDetail.payment, { eager: true })
+  @JoinColumn({ name: 'transaction_detail_id', referencedColumnName: 'transaction_id' })
+  transactionDetail: TransactionDetail;
 
-  @Column()
-  paymentMethod: string;
-
-  @Column({ type: 'timestamp' })
-  paymentTime: Date;
-
-  @Column({ default: 'paid' })
+  @Column({ default: 'pending' })
   status: string;
-  
-  @Column(() => RefundDetails, { prefix: 'refund' })
-  refundDetails?: RefundDetails;
-  
 
-  @Column({ type: 'timestamp', nullable: true })
-  refundTime?: Date;
+  // Relación OneToOne con RefundDetail
+  @OneToOne(() => RefundDetail, (refundDetail) => refundDetail.payment, { nullable: true, eager: true })
+  @JoinColumn({ name: 'refund_detail_id', referencedColumnName: 'refund_id' })
+  refundDetail?: RefundDetail;
 }

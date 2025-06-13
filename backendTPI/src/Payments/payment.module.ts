@@ -3,11 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './payment';
 import { PaymentsController } from './payment.controller';
 import { PaymentsService } from './payment.service';
+import { TransactionDetail } from './transaction_detail';
+import { RefundDetail } from './refund_detail';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment])],
+  imports: [
+    TypeOrmModule.forFeature([Payment, TransactionDetail, RefundDetail])
+  ],
   controllers: [PaymentsController],
   providers: [PaymentsService],
-  exports: [PaymentsService], // Exportar el servicio por si otros módulos lo necesitan
+  exports: [PaymentsService],
 })
 export class PaymentsModule {}

@@ -1,26 +1,26 @@
 # Dependencias
-**/node_modules
+node_modules/ # Cambiado de **/node_modules a node_modules/ para la raíz del contexto
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # Archivos de construcción
-**/dist
-**/build
+dist/ # Cambiado de **/dist a dist/ para la raíz del contexto
+build/ # Cambiado de **/build a build/ para la raíz del contexto
 
 # Variables de entorno (mantener solo .env.example si existe)
-**/.env
-**/.env.local
-**/.env.production
-**/.env.development
+.env
+.env.local
+.env.production
+.env.development
 
 # Control de versiones
-**/.git
-**/.gitignore
+.git/
+.gitignore
 
 # IDEs y editores
-**/.vscode
-**/.idea
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
@@ -31,16 +31,16 @@ Thumbs.db
 
 # Logs
 *.log
-**/logs
+logs/
 
 # Archivos temporales
 *.tmp
 *.temp
 
 # Archivos de prueba
-**/coverage
-**/.nyc_output
-**/test-results
+coverage/
+.nyc_output/
+test-results/
 
 # Docker
 docker-compose*.yml
@@ -48,29 +48,28 @@ Dockerfile*
 .dockerignore
 
 # Archivos específicos de NestJS
-**/nest-cli.json
-**/tsconfig.build.json
-**/tsconfig.json
-**/.eslintrc.js
-**/.prettierrc
+nest-cli.json
+
+.eslintrc.js
+.prettierrc
 
 # Archivos de testing
-**/test
-**/*.spec.ts
-**/*.e2e-spec.ts
-**/jest.config.js
+test/
+*.spec.ts
+*.e2e-spec.ts
+jest.config.js
 
 # Documentación
-**/README.md
-**/docs
+README.md
+docs/
 
 # Archivos de upload/storage (si los hay)
-**/uploads
-**/storage
+uploads/
+storage/
 
 # Base de datos local (si usas SQLite)
-**/*.db
-**/*.sqlite
+*.db
+*.sqlite
 
 # Archivos de migración ya aplicados (opcional, depende de tu setup)
-# **/migrations
+# migrations/
