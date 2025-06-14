@@ -11,7 +11,7 @@ import { RefundDetail } from './refund_detail';
 @Entity('transaction_detail')
 export class TransactionDetail {
   @PrimaryColumn({ name: 'transaction_id' })
-  transaction_id: string; // ← Cambio aquí: usar transaction_id
+  transaction_id: string; 
 
   @Column({ name: 'payment_id', nullable: true })
   payment_id?: string;
