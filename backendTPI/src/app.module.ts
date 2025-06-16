@@ -3,8 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrderModule } from './Orders/order.module';
-
-import { PaymentsModule } from './Payments/payment.module'; // 👈 Ruta correcta
+import { PaymentsModule } from './Payments/payment.module';
 
 @Module({
   imports: [
@@ -19,7 +18,7 @@ import { PaymentsModule } from './Payments/payment.module'; // 👈 Ruta correct
       synchronize: true,
     }),
     OrderModule,
-    PaymentsModule, // 👈 Agregar esta línea
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
