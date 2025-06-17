@@ -272,7 +272,7 @@ Solicita la devolución de un pago realizado.
 ```json
 Request:
 {
-  "reason": "Customer requested a refund"
+ "reason": "Customer requested a refund"
 }
 
 Response:
@@ -296,21 +296,21 @@ Elimina un pago (si es necesario).
 ```json
 Response:
 {
-  "message": "deleted"
+ "message": "deleted"
 }
 ```
 ---
 
-###Descripcion de Estados:
-####Estados de los Pedidos:
--`pending`: Pedido pendiente.
--`in_progress`: Pedido en proceso.
--`delivered`: Pedido entregado.
+### Descripcion de Estados:
+#### Estados de los Pedidos:
+- `pending`: Pedido pendiente.
+- `in_progress`: Pedido en proceso.
+- `delivered`: Pedido entregado.
 
-####Estados de los Pagos:
--`pending`: Pago pendiente.
--`completed`: Pago completado.
--`refunded`: Pago reembolsado.
+#### Estados de los Pagos:
+- `pending`: Pago pendiente.
+- `completed`: Pago completado.
+- `refunded`: Pago reembolsado.
 
 ---
 
@@ -318,14 +318,15 @@ Response:
 
 ## Esta conformado por dos archivos:
 
-### -**BackendTPI**
-### -**database**
+### - **BackendTPI**
+### - **database**
 
-###Sumandole el **docker-compose.yml** en el directorio raiz.
+### Sumandole el **docker-compose.yml** en el directorio raiz.
 
 ---
 
 ## Guia
+
 ---
 Para levantar el docker lo unico que es necesario hacer, es hacer un:
 
@@ -338,4 +339,5 @@ Solo esto es necesario ya que el backend y la base de datos se carga cuando se l
 Luego, en una cmd con **Curl** o si se quiere por otro metodo como **ThunderClient**(el cual utilizamos).
 
 La url es:
--**http://localhost:3000/**
+
+- **http://localhost:3000/**
