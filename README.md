@@ -314,20 +314,8 @@ Response:
 
 ---
 
-# Estructura del Poryecto:
-
-## Esta conformado por dos archivos:
-
-### - **BackendTPI**
-### - **database**
-
-### Sumandole el **docker-compose.yml** en el directorio raiz.
-
----
-
 ## Guia
 
----
 Para levantar el docker lo unico que es necesario hacer, es hacer un:
 
 ```bash
