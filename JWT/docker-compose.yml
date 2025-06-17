@@ -1,7 +1,5 @@
-
-
-services:
-  backend:
+services: # <--- Nivel 0 (sin indentación)
+  backend: # <--- Nivel 1 (2 espacios o 4 espacios, pero consistente)
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,3 +9,35 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
+    depends_on: # <--- Añade esto para asegurar que la base de datos esté lista antes que el backend
+      database:
+        condition: service_healthy # Asegura que la base de datos esté en estado "healthy"
+    networks: # <--- También añade las redes al backend
+      - net
+
+  database:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=db_jwt # <-- Ajusta esto al nombre de tu DB
+      - POSTGRES_INITDB_ARGS=--auth-host=md5 --auth-local=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d db_jwt"] # <-- Ajusta la DB en healthcheck
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    ports:
+      - "5431:5432" # <-- Mapea 5431 del host a 5432 del contenedor (Postgres default)
+    # ELIMINA o COMENTA la siguiente línea:
+    # volumes:
+    #   - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    volumes: # <--- Si no tienes otros volúmenes específicos, esta sección podría eliminarse si es la única línea.
+      - postgres-db:/var/lib/postgresql/data # <--- Mantén este volumen para la persistencia de datos de la DB
+    networks:
+      - net
+volumes: # <--- Define el volumen al mismo nivel que 'services'
+  postgres-db:
+
+networks: # <--- Define la red al mismo nivel que 'services'
+  net:
