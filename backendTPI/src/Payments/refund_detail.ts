@@ -10,12 +10,12 @@ import { TransactionDetail } from './transaction_detail';
 
 @Entity('refund_detail')
 export class RefundDetail {
-  // La clave primaria debe llamarse igual que en la base de datos
+
   @PrimaryColumn({ name: 'refund_id' })
-  refund_id: string; // ← Cambio aquí: usar refund_id en lugar de refundId
+  refund_id: string; 
 
   @Column({ name: 'transaction_id', unique: true })
-  transaction_id: string; // ← Cambio aquí: usar transaction_id
+  transaction_id: string; 
 
   @Column({ name: 'refund_status' })
   refund_status: string;

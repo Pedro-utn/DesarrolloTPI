@@ -40,7 +40,6 @@ export class PaymentsService {
     if (dto.transactionDetails.paymentStatus !== "completed") {
           throw new BadRequestException('Invalid trasacciontionDetail status: only completed is allowed');
     }
-    // Crear el detalle de transacción
     const transaction = this.transactionRepo.create({
       transaction_id: dto.transactionDetails.transactionId,
       payment_status: dto.transactionDetails.paymentStatus,
@@ -50,7 +49,6 @@ export class PaymentsService {
     
     const savedTransaction = await this.transactionRepo.save(transaction);
 
-    // Crear el pago
     const payment = this.paymentRepo.create({
       order: { id: dto.orderId } as any,
       amount: dto.amount,

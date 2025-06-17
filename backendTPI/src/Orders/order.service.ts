@@ -178,7 +178,7 @@ export class OrderService {
       throw new NotFoundException(`Location with ID ${orderToUpdate.locationId} not found for order ${id}`);
     }
 
-    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled']; // <<<--- DEFINE TUS ESTADOS PERMITIDOS AQUÍ (deben ser los mismos que en 'update')
+    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled'];
 
     if (updateData.status) {
       if (!allowedStatuses.includes(updateData.status)) {
