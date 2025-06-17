@@ -1,28 +1,31 @@
-// src/app.module.ts
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { entities } from './entities';
-import { AuthGuard } from './middlewares/auth.middleware';
-import { JwtService } from './jwt/jwt.service';
-import { UsersController } from './users/users.controller';
-import { UsersService } from './users/users.service';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthGuard } from "./middlewares/auth.middleware";
+import { JwtService } from "./jwt/jwt.service";
+import { UsersService } from "./users/users.service";
+import { RolesModule } from "./roles/roles.module";
+import { PermissionsModule } from "./permissions/permissions.module";
+import { UsersModule } from "./users/users.module";
+import { AuthService } from "./middlewares/auth.services";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres', // Cambiado de 'sqlite' a 'postgres'
-      host: 'database', // El nombre del servicio de la base de datos en docker-compose.yml
-      port: 5432, // El puerto interno por defecto de PostgreSQL en el contenedor
-      username: 'postgres', // Coincide con POSTGRES_USER en docker-compose.yml
-      password: '1234', // Coincide con POSTGRES_PASSWORD en docker-compose.yml
-      database: 'db_jwt', // Nombre de la base de datos (ver nota importante abajo)
-      entities,
-      synchronize: true, // Esto mantendrá la creación automática de tablas
+      type: "postgres",
+      host: "localhost",
+      port: 4444,
+      username: "postgres",
+      password: "postgres",
+      database: "postgres",
+      autoLoadEntities: true,
+      synchronize: true,
     }),
-    TypeOrmModule.forFeature(entities),
+    RolesModule,
+    PermissionsModule,
+    UsersModule,
   ],
-  controllers: [AppController, UsersController],
-  providers: [AuthGuard, JwtService, UsersService],
+  controllers: [AppController],
+  providers: [AuthGuard, JwtService, UsersService, AuthService],
 })
 export class AppModule {}
