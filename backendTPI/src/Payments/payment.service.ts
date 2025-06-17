@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException,BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from './payment';
 import { TransactionDetail } from './transaction_detail';
 import { RefundDetail } from './refund_detail';
+
 
 export type CreatePaymentDto = {
   orderId: number;
@@ -35,6 +36,10 @@ export class PaymentsService {
   ) {}
 
   async create(dto: CreatePaymentDto): Promise<Payment> {
+
+    if (dto.transactionDetails.paymentStatus !== "completed") {
+          throw new BadRequestException('Invalid trasacciontionDetail status: only completed is allowed');
+    }
     // Crear el detalle de transacción
     const transaction = this.transactionRepo.create({
       transaction_id: dto.transactionDetails.transactionId,
@@ -77,6 +82,10 @@ export class PaymentsService {
   }
 
   async updateStatus(id: number, dto: UpdatePaymentStatusDto): Promise<Payment> {
+
+    if (dto.status !== 'completed') {
+    throw new BadRequestException('Invalid status: only completed is allowed');
+  }
     const payment = await this.findOne(id);
     payment.status = dto.status;
     return this.paymentRepo.save(payment);
@@ -112,20 +121,21 @@ export class PaymentsService {
 
   async remove(id: number): Promise<{ message: string }> {
     const payment = await this.findOne(id);
-    
-    // Si tiene un reembolso asociado, eliminarlo primero
+
+    // 1. Primero eliminás el Payment (que tiene FKs a transaction y refund)
+    await this.paymentRepo.remove(payment);
+
+    // 2. Luego eliminás el Refund (si existe)
     if (payment.refundDetail) {
       await this.refundRepo.remove(payment.refundDetail);
     }
-    
-    // Eliminar la transacción asociada
+
+    // 3. Finalmente eliminás el TransactionDetail (si existe)
     if (payment.transactionDetail) {
       await this.transactionRepo.remove(payment.transactionDetail);
     }
-    
-    // Finalmente eliminar el pago
-    await this.paymentRepo.remove(payment);
-    
+
     return { message: 'deleted' };
   }
+
 }

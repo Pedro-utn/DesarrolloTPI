@@ -5,7 +5,6 @@ import {
   OneToMany,
 } from 'typeorm';
 
-
 @Entity()
 export class Location {
   @PrimaryGeneratedColumn()
@@ -25,8 +24,6 @@ export class Location {
 
   @Column('float')
   lng: number;
-
-
 }
 
 @Entity()

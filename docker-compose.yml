@@ -33,11 +33,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Monta la carpeta local 'backendTPI' en '/usr/src/app' dentro del contenedor.
-      # Esto es vital para el desarrollo en tiempo real.
       - ./backendTPI:/usr/src/app
-      # Volumen anónimo para 'node_modules'. Evita que tus node_modules locales
-      # sobrescriban los del contenedor y asegura la consistencia de las dependencias.
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
@@ -60,12 +56,7 @@ services:
     ports:
       - "4200:80"
     volumes:
-      # Monta la carpeta local 'frontendTPI' en '/app' dentro del contenedor.
-      # Esto es VITAL para que VS Code pueda sincronizar tus cambios de código en tiempo real.
       - ./frontendTPI:/app
-      # Volumen anónimo para 'node_modules'. Esto evita que tus node_modules locales
-      # sobrescriban los del contenedor, y asegura que las dependencias instaladas
-      # en el contenedor permanezcan allí (útil para diferencias de OS/arquitectura).
       - /app/node_modules 
     depends_on:
       - backend
