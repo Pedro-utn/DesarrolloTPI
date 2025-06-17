@@ -62,9 +62,16 @@ export class PaymentsService {
     return this.paymentRepo.save(payment);
   }
 
-  async findAll(): Promise<Payment[]> {
+  async findAll(page?: number, quantity?: number): Promise<Payment[]> {
+    const itemsPerPage = quantity ? Math.max(1, quantity) : 10; 
+    const currentPage = page ? Math.max(1, page) : 1;
+
+    const skip = (currentPage - 1) * itemsPerPage;
+
     return this.paymentRepo.find({
-      relations: ['order', 'transactionDetail', 'refundDetail']
+      relations: ['order', 'transactionDetail', 'refundDetail'],
+      skip: skip,
+      take: itemsPerPage,
     });
   }
 
@@ -102,7 +109,6 @@ export class PaymentsService {
       throw new Error('No se encontraron detalles de transacción para este pago');
     }
 
-    // Crear reembolso
     const refund = this.refundRepo.create({
       refund_id: `txn_refund_${Math.random().toString(36).substring(2, 10)}`,
       transaction_id: payment.transactionDetail.transaction_id,
@@ -113,7 +119,6 @@ export class PaymentsService {
     
     const savedRefund = await this.refundRepo.save(refund);
 
-    // Actualizar pago
     payment.status = 'refunded';
     payment.refundDetail = savedRefund;
     return this.paymentRepo.save(payment);
@@ -122,15 +127,12 @@ export class PaymentsService {
   async remove(id: number): Promise<{ message: string }> {
     const payment = await this.findOne(id);
 
-    // 1. Primero eliminás el Payment (que tiene FKs a transaction y refund)
     await this.paymentRepo.remove(payment);
 
-    // 2. Luego eliminás el Refund (si existe)
     if (payment.refundDetail) {
       await this.refundRepo.remove(payment.refundDetail);
     }
 
-    // 3. Finalmente eliminás el TransactionDetail (si existe)
     if (payment.transactionDetail) {
       await this.transactionRepo.remove(payment.transactionDetail);
     }
