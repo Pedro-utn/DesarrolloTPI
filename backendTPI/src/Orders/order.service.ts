@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order';
@@ -22,7 +22,7 @@ export class OrderService {
       street: location.street,
       number: location.number,
       cityId: location.cityId,
-      coordinates: {
+      location: {
         lat: parseFloat(location.lat as any),
         lng: parseFloat(location.lng as any),
       },
@@ -30,14 +30,13 @@ export class OrderService {
   };
 }
 
-
   async create(orderData: any): Promise<any> {
   const locationData = {
     street: orderData.location.street,
     number: orderData.location.number,
     cityId: orderData.location.cityId,
-    lat: orderData.location.coordinates.lat,
-    lng: orderData.location.coordinates.lng,
+    lat: orderData.location.location.lat,
+    lng: orderData.location.location.lng,
   };
 
   const location = this.locationRepository.create(locationData);
@@ -59,7 +58,6 @@ export class OrderService {
 
   return this.formatOrderResponse(savedOrder, fullLocation);
 }
-
 
   async findAll(): Promise<any[]> {
     const rows = await this.orderRepository
@@ -87,7 +85,7 @@ export class OrderService {
       {
         street: row.street,
         number: row.number,
-        cityId: row.cityId,
+        cityId: row.cityid,
         lat: row.lat,
         lng: row.lng,
       } as Location
@@ -116,7 +114,7 @@ export class OrderService {
       {
         street: row.street,
         number: row.number,
-        cityId: row.cityId,
+        cityId: row.cityid,
         lat: row.lat,
         lng: row.lng,
       } as Location
@@ -124,49 +122,85 @@ export class OrderService {
 
   }
 
-  async update(id: number, updateData: any): Promise<Order> {
-    const order = await this.findOne(id);
-    
-    if (updateData.status) {
-      order.status = updateData.status;
+  async update(id: number, updateData: any): Promise<any> {
+    const orderToUpdate = await this.orderRepository.findOneBy({ id: id });
+    if (!orderToUpdate) {
+      throw new NotFoundException(`Order with ID ${id} not found for update`);
     }
-    
+    const locationToUpdate = await this.locationRepository.findOneBy({ id: orderToUpdate.locationId });
+    if (!locationToUpdate) {
+      throw new NotFoundException(`Location with ID ${orderToUpdate.locationId} not found for order ${id}`);
+    }
+
+    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled']; // <<<--- DEFINE TUS ESTADOS PERMITIDOS AQUÍ (ajusta si son otros)
+
+    if (updateData.status) {
+      if (!allowedStatuses.includes(updateData.status)) {
+        throw new BadRequestException(`Invalid status: ${updateData.status}. Allowed statuses are: ${allowedStatuses.join(', ')}`);
+      }
+      orderToUpdate.status = updateData.status;
+    }
+
     if (updateData.location) {
-      // Actualizar la ubicación existente
-      const locationData = {
+      const locationUpdateData = {
         street: updateData.location.street,
         number: updateData.location.number,
         cityId: updateData.location.cityId,
         lat: updateData.location.location.lat,
         lng: updateData.location.location.lng,
       };
-      
-      await this.locationRepository.update(order.locationId, locationData);
+      await this.locationRepository.update(locationToUpdate.id, locationUpdateData);
+      Object.assign(locationToUpdate, locationUpdateData);
     }
-    
-    return this.orderRepository.save(order);
+
+    const savedOrder = await this.orderRepository.save(orderToUpdate);
+    return this.formatOrderResponse(savedOrder, locationToUpdate);
   }
 
-  async updatePartial(id: number, updateData: any): Promise<Order> {
-    const order = await this.findOne(id);
-    
-    if (updateData.status) {
-      order.status = updateData.status;
+  async updatePartial(id: number, updateData: any): Promise<any> {
+    const orderToUpdate = await this.orderRepository.findOneBy({ id: id });
+    if (!orderToUpdate) {
+      throw new NotFoundException(`Order with ID ${id} not found for partial update`);
     }
-    
+    const locationForResponse = await this.locationRepository.findOneBy({ id: orderToUpdate.locationId });
+    if (!locationForResponse) {
+      throw new NotFoundException(`Location with ID ${orderToUpdate.locationId} not found for order ${id}`);
+    }
+
+    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled']; // <<<--- DEFINE TUS ESTADOS PERMITIDOS AQUÍ (deben ser los mismos que en 'update')
+
+    if (updateData.status) {
+      if (!allowedStatuses.includes(updateData.status)) {
+        throw new BadRequestException(`Invalid status: ${updateData.status}. Allowed statuses are: ${allowedStatuses.join(', ')}`);
+      }
+      orderToUpdate.status = updateData.status;
+    }
+
     if (updateData.delivery !== undefined) {
-      order.delivery = updateData.delivery;
+      orderToUpdate.delivery = updateData.delivery;
     }
     if (updateData.id) {
-      order.id = updateData.id;
+      orderToUpdate.id = updateData.id;
     }
-    
-    return this.orderRepository.save(order);
+
+    const savedOrder = await this.orderRepository.save(orderToUpdate);
+    return this.formatOrderResponse(savedOrder, locationForResponse);
   }
 
   async remove(id: number): Promise<{ message: string }> {
-    const order = await this.findOne(id);
-    await this.orderRepository.remove(order);
+    const orderToRemove = await this.orderRepository.findOneBy({ id: id });
+    if (!orderToRemove) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
+    if (orderToRemove.locationId) {
+      const locationToRemove = await this.locationRepository.findOneBy({ id: orderToRemove.locationId });
+      if (locationToRemove) {
+        await this.locationRepository.remove(locationToRemove);
+      }
+    }
+
+    await this.orderRepository.remove(orderToRemove);
     return { message: 'deleted' };
   }
 }
