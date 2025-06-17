@@ -59,7 +59,16 @@ export class OrderService {
   return this.formatOrderResponse(savedOrder, fullLocation);
 }
 
-  async findAll(): Promise<any[]> {
+  async findAll(page?: number, quantity?: number): Promise<any[]> {
+    const itemsPerPage = quantity ? Math.max(1, quantity) : 10;
+    const currentPage = page ? Math.max(1, page) : 1;
+
+    const skip = (currentPage - 1) * itemsPerPage;
+
+    console.log(`DEBUG Paginación: Recibido page=${page}, quantity=${quantity}`);
+    console.log(`DEBUG Paginación: Calculado currentPage=${currentPage}, itemsPerPage=${itemsPerPage}, skip=${skip}`);
+    
+
     const rows = await this.orderRepository
       .createQueryBuilder('order')
       .leftJoin('location', 'location', 'order.locationId = location.id')
@@ -73,6 +82,8 @@ export class OrderService {
         'location.lat AS lat',
         'location.lng AS lng',
       ])
+      .offset(skip)
+      .limit(itemsPerPage)
       .getRawMany();
   
     return rows.map(row =>
@@ -167,7 +178,7 @@ export class OrderService {
       throw new NotFoundException(`Location with ID ${orderToUpdate.locationId} not found for order ${id}`);
     }
 
-    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled']; // <<<--- DEFINE TUS ESTADOS PERMITIDOS AQUÍ (deben ser los mismos que en 'update')
+    const allowedStatuses = ['pending', 'in_progress', 'delivered', 'cancelled'];
 
     if (updateData.status) {
       if (!allowedStatuses.includes(updateData.status)) {

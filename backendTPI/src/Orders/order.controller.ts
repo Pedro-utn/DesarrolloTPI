@@ -6,7 +6,8 @@ import {
   Param, 
   Put, 
   Patch, 
-  Delete 
+  Delete,
+  Query
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from './order';
@@ -21,8 +22,13 @@ export class OrderController {
   }
 
   @Get()
-  findAll(): Promise<Order[]> {
-    return this.orderService.findAll();
+  findAll(
+    @Query('page') page?: string,
+    @Query('quantity') quantity?: string,
+  ): Promise<Order[]> {
+    const pageNum = page ? parseInt(page, 10) : undefined;
+    const quantityNum = quantity ? parseInt(quantity, 10) : undefined;
+    return this.orderService.findAll(pageNum, quantityNum);
   }
 
   @Get(':id')
