@@ -8,7 +8,8 @@ import {
   Delete, 
   ParseIntPipe,
   HttpStatus,
-  HttpCode
+  HttpCode,
+  Query
 } from '@nestjs/common';
 import { 
   PaymentsService, 
@@ -38,8 +39,15 @@ export class PaymentsController {
   }
 
   @Get()
-  async findAll(): Promise<any[]> {
-    const payments = await this.paymentsService.findAll();
+  async findAll(
+    @Query('page') page?: string,
+    @Query('quantity') quantity?: string,
+  ): Promise<any[]> {
+    const pageNum = page ? parseInt(page, 10): undefined;
+    const quantityNum = quantity ? parseInt(quantity, 10): undefined;
+    
+    const payments = await this.paymentsService.findAll(pageNum, quantityNum);
+    
     return payments.map(payment => ({
       id: payment.id,
       orderId: payment.order.id,
