@@ -42,6 +42,5 @@ INSERT INTO ROL_PERMISSIONS_PERMISSION ("rolId", "permissionId") VALUES
 -- La contraseña es admin123
 INSERT INTO USERS (email, password, "rolId") VALUES 
 ('admin@gmail.com', '$2b$10$0H2wiH6Pc6MipYulNWhwLeM0Cc6XaAR4/zXpLV.QhcU8DHZCZsmWK', 1),
-('usuario@gmail.com', '1234', 2)
+('usuario', '$2b$10$hSfb3jA.fN.Z2QOWSAy2B.90K0B9fT98XLzpCQfX15F1AJg35w8Wm', 2)
 ON CONFLICT (email) DO NOTHING;
-
