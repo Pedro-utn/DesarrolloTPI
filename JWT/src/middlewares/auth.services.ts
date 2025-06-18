@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "src/jwt/jwt.service";
-import { Role } from "src/roles/entities/role.entity";
-import { UserEntity } from "src/users/entities/user.entity";
-import { UsersService } from "src/users/users.service";
+import { Role } from "src/entities/roles/role.entity";
+import { UserEntity } from "../entities/users/user.entity";
+import { UsersService } from "../entities/users/users.service";
 import { Repository } from "typeorm";
 
 @Injectable()

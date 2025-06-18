@@ -9,12 +9,12 @@ import {
   Headers,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { LoginDTO } from "../interfaces/login.dto";
-import { RegisterDTO } from "../interfaces/register.dto";
+import { LoginDTO } from "../../interfaces/login.dto";
+import { RegisterDTO } from "../../interfaces/register.dto";
 import { Request } from "express";
-import { AuthGuard } from "../middlewares/auth.middleware";
+import { AuthGuard } from "../../middlewares/auth.middleware";
 import { RequestWithUser } from "src/interfaces/request-user";
-import { UpdateUserRole } from "./dto/update-user-role.dto";
+import { UpdateUserRole } from "../users/users.service";
 import { Permissions } from "src/middlewares/decorators/permissions.decorator";
 import { AuthService } from "src/middlewares/auth.services";
 
@@ -25,9 +25,8 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  @UseGuards(AuthGuard)
-  @Permissions(["test"])
   @Get("me")
+  @UseGuards(AuthGuard)
   me(@Req() req: RequestWithUser) {
     return {
       email: req.user.email,
@@ -35,7 +34,7 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  @Permissions(["test"])
+  @Permissions(["admin"])
   @Post(":id/assignRoles")
   @Permissions(["assignRoles"])
   updateRol(@Param("id") id: string, @Body() updateUserRol: UpdateUserRole) {
@@ -51,16 +50,6 @@ export class UsersController {
   register(@Body() body: RegisterDTO) {
     return this.service.register(body);
   }
-
-  // @UseGuards(AuthGuard)
-  // @Permissions(["admin"])
-  // @Get("can-do/:permission")
-  // canDo(
-  //   @Req() request: RequestWithUser,
-  //   @Param("permission") permission: string,
-  // ) {
-  //   return this.service.canDo(request.user, permission);
-  // }
 
   @Get("refresh-token")
   refreshToken(@Req() request: Request) {
@@ -79,4 +68,5 @@ export class UsersController {
       requiredPermissions,
     );
   }
+
 }

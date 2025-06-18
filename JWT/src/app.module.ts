@@ -3,10 +3,10 @@ import { AppController } from "./app.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthGuard } from "./middlewares/auth.middleware";
 import { JwtService } from "./jwt/jwt.service";
-import { UsersService } from "./users/users.service";
-import { RolesModule } from "./roles/roles.module";
-import { PermissionsModule } from "./permissions/permissions.module";
-import { UsersModule } from "./users/users.module";
+import { UsersService } from "./entities/users/users.service";
+import { RolesModule } from "./entities/roles/roles.module";
+import { PermissionsModule } from "./entities/permissions/permissions.module";
+import { UsersModule } from "./entities/users/users.module";
 import { AuthService } from "./middlewares/auth.services";
 
 @Module({

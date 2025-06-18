@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from "@nestjs/common";
 import { RolesService } from "./roles.service";
-import { CreateRoleDto } from "./dto/create-role.dto";
-import { UpdateRoleDto } from "./dto/update-role.dto";
+import { CreateRoleDto, UpdateRoleDto } from "../roles/roles.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Permissions } from "src/middlewares/decorators/permissions.decorator";
 

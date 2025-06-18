@@ -1,10 +1,24 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreatePermissionDto } from "./dto/create-permission.dto";
-import { UpdatePermissionDto } from "./dto/update-permission.dto";
-import { Permission } from "./entities/permission.entity";
+import { Permission } from "./permission.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { NotFoundError } from "rxjs";
+
+export type CreatePermissionDto = {
+  name:string;
+}
+
+export type IdOnlyPermissionDto = {
+  id:number;
+}
+
+export type UpdatePermissionDto = {
+
+  name?:string;
+  id_rol?: IdOnlyPermissionDto[];
+
+}
+
+
 
 @Injectable()
 export class PermissionsService {
@@ -35,9 +49,6 @@ export class PermissionsService {
     }
     if (updatePermissionDto.name !== undefined) {
       permission.name = updatePermissionDto.name;
-    }
-    if (updatePermissionDto.description !== undefined) {
-      permission.description = updatePermissionDto.description;
     }
     return await this.permissionRepository.save(permission);
   }

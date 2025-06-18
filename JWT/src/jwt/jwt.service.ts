@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { sign, verify } from "jsonwebtoken";
 import * as dayjs from "dayjs";
 import { Payload } from "src/interfaces/payload";
+
 @Injectable()
 export class JwtService {
-  // config.ts
   config = {
     auth: {
       secret: "authSecret",
@@ -30,7 +30,6 @@ export class JwtService {
   } {
     try {
       const payload = this.getPayload(refreshToken, "refresh");
-      // Obtiene el tiempo restante en minutos hasta la expiración
       const timeToExpire = dayjs.unix(payload.exp).diff(dayjs(), "minute");
       return {
         accessToken: this.generateToken({ email: payload.email }),

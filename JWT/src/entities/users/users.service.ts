@@ -1,19 +1,30 @@
-import {
-  HttpException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { HttpException, Injectable, NotFoundException, UnauthorizedException} from "@nestjs/common";
 import { LoginDTO } from "src/interfaces/login.dto";
 import { RegisterDTO } from "src/interfaces/register.dto";
 import { UserI } from "src/interfaces/user.interface";
-import { UserEntity } from "./entities/user.entity";
+import { UserEntity } from "./user.entity";
 import { hashSync, compareSync } from "bcrypt";
 import { JwtService } from "src/jwt/jwt.service";
-import { UpdateUserRole } from "./dto/update-user-role.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "src/roles/entities/role.entity";
+import { Role } from "src/entities/roles/role.entity";
 import { Repository } from "typeorm";
+import { IdOnlyRolDto } from "../roles/roles.service";
+
+export type CreateUserDto = {
+  email:string;
+  password: string;
+}
+
+export type UpdateUserDto = {
+  name?: string;
+  password?: string;
+  id_rol: IdOnlyRolDto
+}
+
+export type UpdateUserRole = {
+  rol: IdOnlyRolDto
+}
+
 
 @Injectable()
 export class UsersService {
@@ -29,29 +40,20 @@ export class UsersService {
     return this.jwtService.refreshToken(refreshToken);
   }
 
-  // canDo(user: UserI, permission: string): boolean {
-  //   console.log(`Permission pedido: ${permission}`);
-  //   const result = user.permissionCodes.includes(permission);
-  //   if (!result) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   return true;
-  // }
-
   async register(body: RegisterDTO) {
     try {
       const user = new UserEntity();
       Object.assign(user, body);
       user.password = hashSync(user.password, 10);
-      const defaultRole = await this.roleRepository.findOneBy({ code: "user" });
+      const defaultRole = await this.roleRepository.findOneBy({ name: "user" });
 
       if (!defaultRole) {
-        throw new NotFoundException("Default Role not found");
+        throw new NotFoundException("Rol predeterminado no encontrado");
       }
       user.rol = defaultRole;
       await this.repository.save(user);
 
-      return { status: "created" };
+      return { status: "Usuario creado" };
     } catch (error) {
       throw new HttpException("Error de creacion", 500);
     }
@@ -84,19 +86,23 @@ export class UsersService {
     const userFound = await this.repository.findOneBy({ id: id });
 
     if (!userFound) {
-      throw new NotFoundException("No matching user found");
+      throw new NotFoundException("No se encontró ningún usuario que coincida");
     }
+    
     const foundRol = await this.roleRepository.findOneBy({
-      code: rol.code,
+      id: rol.id,
     });
 
     if (!foundRol) {
-      throw new NotFoundException("No matching rol found");
+      throw new NotFoundException("Rol no encontrado");
     }
 
     userFound.rol = foundRol;
-    this.repository.save(userFound);
+    await this.repository.save(userFound);
 
-    return "Rol updated sucessfully";
+    return "Rol actualizado";
   }
+
+  
+
 }
