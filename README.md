@@ -315,13 +315,14 @@ Response:
 ---
 
 ## Guia
+Con la intencion de simplificar el entorno de desarrollo dockerizamos el proyecto que contiene los endpoints y la base de datos.
 
-Para levantar el docker lo unico que es necesario hacer, es hacer un:
+Para levantar el proyecto lo unico que es necesario hacer, es hacer un:
 
 ```bash
 docker compose up --build
 ```
-
+Sobre la raiz del proyecto.
 Solo esto es necesario ya que el backend y la base de datos se carga cuando se levanta el **Docker**.
 
 Luego, en una cmd con **Curl** o si se quiere por otro metodo como **ThunderClient**(el cual utilizamos).
