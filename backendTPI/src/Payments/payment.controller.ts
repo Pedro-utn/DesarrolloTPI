@@ -1,7 +1,8 @@
 import { 
   Controller, 
   Post, 
-  Body, 
+  UseGuards,
+  Body,   
   Get, 
   Param, 
   Put, 
@@ -17,12 +18,17 @@ import {
   UpdatePaymentStatusDto, 
   RefundPaymentDto 
 } from './payment.service';
+import { AuthGuard } from 'src/middleware/auth.middleware';
+import { Permissions } from 'src/middleware/auth.middleware';
 
+
+@UseGuards(AuthGuard) 
 @Controller('payment')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post()
+  @Permissions(['createPayment'])  
   async create(@Body() createPaymentDto: CreatePaymentDto): Promise<any> {
     const payment = await this.paymentsService.create(createPaymentDto);
     return {
@@ -39,6 +45,7 @@ export class PaymentsController {
   }
 
   @Get()
+  @Permissions(['findAllPayment'])
   async findAll(
     @Query('page') page?: string,
     @Query('quantity') quantity?: string,
@@ -61,7 +68,9 @@ export class PaymentsController {
     }));
   }
 
+
   @Get(':id')
+  @Permissions(['findOnePayment'])
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const payment = await this.paymentsService.findOne(id);
     return {
@@ -78,6 +87,7 @@ export class PaymentsController {
   }
 
   @Put(':id/status')
+  @Permissions(['updateStatusPayment'])
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateStatusDto: UpdatePaymentStatusDto
@@ -97,6 +107,7 @@ export class PaymentsController {
   }
 
   @Post(':id/refund')
+  @Permissions(['postRefundPayment'])
   async refund(
     @Param('id', ParseIntPipe) id: number,
     @Body() refundDto: RefundPaymentDto
@@ -116,6 +127,7 @@ export class PaymentsController {
   }
 
   @Delete(':id')
+  @Permissions(['deletePayment'])
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number): Promise<{ message: string }> {
     return this.paymentsService.remove(id);
