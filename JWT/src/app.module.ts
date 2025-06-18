@@ -13,8 +13,8 @@ import { AuthService } from "./middlewares/auth.services";
   imports: [
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "localhost",
-      port: 4444,
+      host: "db", 
+      port: 5432, 
       username: "postgres",
       password: "postgres",
       database: "postgres",

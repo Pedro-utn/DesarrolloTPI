@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   jwt:
     build:
@@ -10,8 +12,7 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - net
 
@@ -27,16 +28,15 @@ services:
       - "4444:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 2s
-      retries: 5
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    
     networks:
       - net
 
+ 
 volumes:
   postgres_data:
 
 networks:
   net:
+    driver: bridge

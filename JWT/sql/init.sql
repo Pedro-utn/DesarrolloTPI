@@ -51,8 +51,5 @@ INSERT INTO ROL_PERMISSIONS_PERMISSION ("rolId", "permissionId") VALUES
 (1, 26), (1, 27), (1, 28), (1, 29), (1, 30), (1, 31),
 (1, 32), (1, 33), (1, 34), (1, 35), (1, 36); 
 
--- 4. Crear el usuario administrador
--- La contraseña es admin123
-INSERT INTO USERS (id, email, password, "rolId") VALUES 
-(1, 'admin@sistema.com', '$2b$10$MfHtev23g1zjSx7.JAd9h.a4pFzw3FBmBF0dQ4jzE7FOOTPoLJd6W', 1);
+
 
