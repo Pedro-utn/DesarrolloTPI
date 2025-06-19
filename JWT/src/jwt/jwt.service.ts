@@ -44,6 +44,11 @@ export class JwtService {
   }
 
   getPayload(token: string, type: "refresh" | "auth" = "auth"): Payload {
-    return verify(token, this.config[type].secret);
-  }
+  const cleanToken = token.replace(/^Bearer\s+/i, '');
+  
+  console.log("Token recibido en getPayload:", token);
+
+  return verify(cleanToken, this.config[type].secret);
+}
+
 }
