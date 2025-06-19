@@ -45,9 +45,3 @@
 
 /backendTPI/report.*.json
 
-# === FRONTEND IGNORE ===
-/frontendTPI/frontend/node_modules/
-/frontendTPI/frontend/dist/
-/frontendTPI/frontend/.angular
-
-/indicaciones.txt

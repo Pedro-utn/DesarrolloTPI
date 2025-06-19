@@ -12,6 +12,7 @@ docker compose up db jwt db-init --build
 ```
 2. Realizar un POST en el url: http://localhost:3001/login, con los siguientes datos.
 ```json
+Rquest
 {
   "email" : "admin@gmail.com",
   "password" : "admin123"
