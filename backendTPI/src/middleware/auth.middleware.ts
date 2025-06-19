@@ -6,7 +6,6 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import axios from 'axios';
 import { Request } from 'express';
 
 // Decorador @Permissions
@@ -32,24 +31,46 @@ export class AuthGuard implements CanActivate {
     );
 
     try {
-      const response = await axios.post(
-        'http://localhost:3001/auth/validate-permissions',
-        {
-          requiredPermissions: permissions,
-        },
-        {
-          headers: {
-            Authorization: token,
-          },
-        },
-      );
+      // 🚀 DEBUG
+      console.log('🔍 DEBUG - Variables de entorno JWT:');
+      console.log('   - JWT_SERVICE_URL:', process.env.JWT_SERVICE_URL);
+      console.log('   - NODE_ENV:', process.env.NODE_ENV);
 
-      request['user'] = response.data.user;
+      const baseUrl = process.env.JWT_SERVICE_URL || 'http://jwt:3001';
+      const fullUrl = `${baseUrl}/auth/validate-permissions`;
+      console.log('🟢 Usando FETCH para validar permisos en:', fullUrl);
+
+      console.log('🔒 Enviando token al servicio JWT:', token);
+      console.log('🔒 Permisos requeridos:', permissions);
+
+      const response = await fetch(fullUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          requiredPermissions: permissions,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ Error response del servicio JWT:', errorData);
+        throw new UnauthorizedException(
+          errorData.message || 'No autorizado',
+        );
+      }
+
+      const data = await response.json();
+      console.log('✅ Respuesta del servicio JWT:', data);
+
+      request['user'] = data;
       return true;
+
     } catch (error) {
-      throw new UnauthorizedException(
-        error.response?.data?.message || 'No autorizado',
-      );
+      console.error('❌ Excepción inesperada en AuthGuard:', error);
+      throw new UnauthorizedException('No autorizado');
     }
   }
 }

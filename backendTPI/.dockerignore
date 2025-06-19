@@ -47,8 +47,7 @@ docker-compose*.yml
 Dockerfile*
 .dockerignore
 
-# Archivos específicos de NestJS
-nest-cli.json
+
 
 .eslintrc.js
 .prettierrc
