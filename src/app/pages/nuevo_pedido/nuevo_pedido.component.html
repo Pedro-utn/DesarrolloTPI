@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="header">
+    <h2>Nuevo Pedido</h2>
+  </div>
+
+  <div class="form-container">
+    <div class="user-info">
+      <p>Usuario: {{ userName }}</p>
+      <p>ID: {{ usuarioId }}</p>
+    </div>
+
+    <div class="form-group">
+      <label for="delivery">Delivery</label>
+      <select id="delivery" [(ngModel)]="deliveryOption" name="delivery">
+        <option value="" disabled selected>Selecciona una opción</option>
+        <option *ngFor="let option of deliveryOptions" [value]="option">{{ option }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="productos">Producto/s</label>
+      <select id="productos" [(ngModel)]="selectedProduct" name="productos">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product">{{ product }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="restaurante">Restaurante</label>
+      <select id="restaurante" [(ngModel)]="selectedRestaurant" name="restaurante">
+        <option value="" disabled selected>Selecciona un restaurante</option>
+        <option *ngFor="let restaurant of restaurants" [value]="restaurant">{{ restaurant }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" [(ngModel)]="direccion" name="direccion" placeholder="Ingresa tu dirección">
+      <span class="map-icon" title="Abrir mapa">&#x1F5FA;</span>
+    </div>
+
+    <div class="form-group">
+      <label for="localidad">Localidad</label>
+      <select id="localidad" [(ngModel)]="localidad" name="localidad">
+        <option value="" disabled selected>Selecciona una localidad</option>
+        <option *ngFor="let loc of localidades" [value]="loc">{{ loc }}</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="btn cancel" (click)="cancelar()">Cancelar</button>
+      <button class="btn primary" (click)="agregarPedido()">Agregar Pedido</button>
+    </div>
+  </div>
+</div>

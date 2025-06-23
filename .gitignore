@@ -1,0 +1,62 @@
+# Archivos de Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.pnp.*
+
+# Build artifacts
+dist/
+build/
+.angular/
+.browserslistrc.json
+
+# Entorno de desarrollo
+.env
+.env.*
+!.env.example # Si tienes un archivo .env.example que quieres versionar
+
+# Archivos de IDEs (ej. VS Code, WebStorm)
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Archivos de configuración temporales o de usuario
+.DS_Store
+Thumbs.db
+
+# Cobertura de tests
+coverage/
+
+# Archivos de logs
+*.log
+
+# Archivos de caché
+.cache/
+
+# Archivos de paquetes de OS
+*.swp
+*.bak
+*.tmp
+*~
+._*
+
+# Dependencias instaladas por 'npm ci'
+# package-lock.json # Descomenta si *no* quieres versionar el package-lock.json (raro en Angular)
+
+# Archivos de compilación TypeScript
+*.js.map
+*.d.ts
+!src/**/*.d.ts # Mantener los archivos .d.ts generados en src
+
+# Archivos de compilación de Cypress (si usas e2e tests)
+cypress/videos/
+cypress/screenshots/
+
+# Archivos de configuración de Netlify / Vercel (si los usas)
+.netlify/
+.vercel/
