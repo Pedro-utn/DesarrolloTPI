@@ -2,7 +2,7 @@
 
 Este proyecto fue creado usando [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
 
-## Servidor
+## Guia de ejecucion
 ### Iniciar con Docker
 
 Para simplificar la prueba del proyecto, lo hemos dockerizado.
@@ -23,4 +23,4 @@ Contraseña: password
 
 ## Comentarios
 
-Solamente se hicieron las pantallas navegables, en forma de simulación
+Solamente se hicieron las pantallas navegables, en forma de simulación.
