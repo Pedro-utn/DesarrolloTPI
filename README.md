@@ -3,20 +3,14 @@
 Este proyecto fue creado usando [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
 
 ## Servidor
+### Iniciar con Docker
 
-Para iniciar el servidor, se debe ejecutar el siguiente comando:
-
+Para simplificar la prueba del proyecto, lo hemos dockerizado.
 ```bash
-ng serve
+docker compose up --build
 ```
+Una vez levantado el docker acceder a través de un cliente web a la url `http://localhost:4200/`
 
-Y luego abrir una pestaña en el navegador e ir a `http://localhost:4200/`.
-
-Si se quiere iniciar el servidor y abrir automáticamente la pestaña en localhost:
-
-```bash
-ng serve --open
-```
 
 ## Iniciar Sesión
 
