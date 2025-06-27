@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router'; // Importa Router
+import { HttpClient, HttpHeaders, HttpClientModule  } from '@angular/common/http'; // ¡Esto es nuevo!
 
 @Component({
   selector: 'app-nuevo-pedido',
   standalone: true, //Configuración de StandAlone components
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './nuevo_pedido.component.html',
   styleUrls: ['./nuevo_pedido.component.css']
 })
@@ -28,7 +29,7 @@ export class NuevoPedidoComponent implements OnInit {
   restaurants: string[] = ['Restaurante A', 'Restaurante B', 'Restaurante C'];
   localidades: string[] = ['Villa María', 'Córdoba Capital', 'Buenos Aires']; // Agrega opciones de localidades
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private http: HttpClient) { }
 
   ngOnInit(): void {
     // Lógica para cargar datos iniciales si fuera necesario,
@@ -46,13 +47,29 @@ export class NuevoPedidoComponent implements OnInit {
       direccion: this.direccion,
       localidad: this.localidad
     };
+    
+    //Define los encabezados de la solicitud
+    const httpOption = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    }
 
-    console.log('Pedido a agregar:', pedido);
-    // Simular envío de datos
-    alert('Pedido agregado con éxito (simulado)!');
-    // Redirigir a la página de home o a una de confirmación
-    this.router.navigate(['/home']);
+    //URL de la API REST
+    const apiUrl = 'http://localhost:3000/order';
+  
+    //Realiza la solicitud POST a la API
+    this.http.post(apiUrl, pedido, httpOption).subscribe({
+      next: (response) => {
+        console.log('Pedido agregado con exito:', response);
+        this.router.navigate(['/home']); //Redirige la pagina de home
+      },
+      error: (error) => {
+        console.error('Error al agregar el pedido:', error);
+      }
+    });
   }
+  
 
   cancelar() {
     console.log('Pedido cancelado');
