@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs'; // Necesario para el estado de isLoggedIn$
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http'; // <-- Importa HttpClient y HttpHeaders
+import { catchError, tap } from 'rxjs/operators'; // <-- Importa operadores de RxJS
+import { throwError } from 'rxjs'; // <-- Importa throwError para manejo de errores
 
 @Injectable({
   providedIn: 'root'
@@ -9,56 +12,94 @@ export class AuthService {
   private _isLoggedIn = new BehaviorSubject<boolean>(false);
   public isLoggedIn$: Observable<boolean> = this._isLoggedIn.asObservable();
 
-  constructor(private router: Router) {
-    // Al iniciar, verifica si hay un token simulado para restaurar la sesión
-    const token = localStorage.getItem('authToken');
+  // URL base de tu microservicio NestJS (asegúrate de que sea la correcta)
+  // Si tu microservicio corre en localhost:3000, sería algo así:
+  private apiUrl = 'http://localhost:3001'; // Ajusta esto a la URL real de tu backend
+
+  constructor(private router: Router, private http: HttpClient) { // <-- Inyecta HttpClient
+    const token = localStorage.getItem('accessToken'); // Cambiado a 'accessToken'
     if (token) {
       this._isLoggedIn.next(true);
     }
   }
 
   async login(username: string, password: string): Promise<boolean> {
-    console.log('AuthService: Simulando intento de login para:', username);
-    // SIMULACIÓN: Siempre devuelve true después de un breve retraso
-    return new Promise(resolve => {
-      setTimeout(() => {
-        // Ejemplo de simulación con credenciales fijas
-        if (username === 'test@example.com' && password === 'password') { // Usa credenciales de prueba
-            localStorage.setItem('authToken', 'fake_jwt_token_123'); // Guarda un token simulado
-            this._isLoggedIn.next(true);
-            console.log('AuthService: Login simulado exitoso.');
-            resolve(true);
-        } else {
-            console.log('AuthService: Login simulado fallido (credenciales incorrectas).');
+    console.log('AuthService: Intentando login para:', username);
+
+    const loginData = { email: username, password: password }; // Tu backend espera 'email'
+
+    return new Promise((resolve) => {
+      this.http.post<any>(`${this.apiUrl}/login`, loginData)
+        .pipe(
+          tap(response => {
+            // Si el backend devuelve accessToken y refreshToken
+            if (response && response.accessToken && response.refreshToken) {
+              localStorage.setItem('accessToken', response.accessToken);
+              localStorage.setItem('refreshToken', response.refreshToken); // Guardar refresh token también
+              this._isLoggedIn.next(true);
+              console.log('AuthService: Login exitoso. Tokens guardados.');
+              resolve(true);
+            } else {
+              // Esto ocurriría si el backend devuelve un 200 OK pero sin los tokens esperados
+              console.warn('AuthService: Login exitoso, pero no se recibieron tokens esperados.');
+              this._isLoggedIn.next(false);
+              resolve(false);
+            }
+          }),
+          catchError((error: HttpErrorResponse) => {
+            console.error('AuthService: Error en el login:', error);
             this._isLoggedIn.next(false);
-            resolve(false);
-        }
-      }, 500); // Simula un retraso de red
+            // Puedes manejar diferentes códigos de error HTTP aquí
+            if (error.status === 401) { // Unauthorized (credenciales incorrectas)
+              console.log('AuthService: Credenciales incorrectas.');
+              // Podrías lanzar un error específico o simplemente resolver a false
+            } else if (error.status >= 500) { // Errores del servidor
+              console.log('AuthService: Error del servidor.');
+            } else { // Otros errores
+              console.log('AuthService: Error desconocido en el login.');
+            }
+            resolve(false); // Siempre resuelve la promesa a false en caso de error
+            return throwError(() => new Error('Login fallido')); // Propaga el error para que el componente pueda manejarlo si lo desea
+          })
+        )
+        .subscribe(); // Necesario para que el Observable se ejecute
     });
   }
 
   async register(email: string, password: string): Promise<boolean> {
-    console.log('AuthService: Simulando intento de registro para:', email);
-    // SIMULACIÓN: Siempre devuelve true después de un breve retraso
-    return new Promise(resolve => {
-      setTimeout(() => {
-        console.log('AuthService: Registro simulado exitoso.');
-        resolve(true);
-      }, 500);
+    console.log('AuthService: Intentando registro para:', email);
+    const registerData = { email: email, password: password };
+
+    return new Promise((resolve) => {
+      this.http.post<any>(`${this.apiUrl}/register`, registerData)
+        .pipe(
+          tap(response => {
+            console.log('AuthService: Registro exitoso.', response);
+            // Aquí no necesariamente inicias sesión, solo confirmas el registro
+            resolve(true);
+          }),
+          catchError((error: HttpErrorResponse) => {
+            console.error('AuthService: Error en el registro:', error);
+            resolve(false);
+            return throwError(() => new Error('Registro fallido'));
+          })
+        )
+        .subscribe();
     });
   }
 
   logout(): void {
-    console.log('AuthService: Logout simulado');
-    localStorage.removeItem('authToken'); // Eliminar token simulado
+    console.log('AuthService: Cerrando sesión');
+    localStorage.removeItem('accessToken'); // Eliminar accessToken
+    localStorage.removeItem('refreshToken'); // Eliminar refreshToken
     this._isLoggedIn.next(false);
-    this.router.navigate(['/login']); // Redirige al login
+    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    // En una app real, acá también se podría validar si el token no ha expirado
-    const token = localStorage.getItem('authToken');
-    const authStatus = !!token; // Devuelve true si el token existe, false si no
-    return authStatus;
+    const accessToken = localStorage.getItem('accessToken');
+    // En una app real, también deberías decodificar el token para verificar su expiración
+    // o hacer una llamada al backend para validar el token si es necesario
+    return !!accessToken; // Devuelve true si el token existe, false si no
   }
 }
