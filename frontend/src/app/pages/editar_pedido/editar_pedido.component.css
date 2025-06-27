@@ -1,0 +1,106 @@
+.header {
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colores de la imagen */
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.form-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto; /* Centrar el formulario */
+}
+
+.user-info {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.user-info p {
+  margin: 5px 0;
+  font-size: 1.1em;
+  color: #555;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* Asegura que el padding no añada al ancho total */
+  font-size: 1em;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinear botones a la derecha */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #ff5e3a; /* Color naranja */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #e64a27;
+}
+
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.85em;
+  margin-top: 5px;
+}

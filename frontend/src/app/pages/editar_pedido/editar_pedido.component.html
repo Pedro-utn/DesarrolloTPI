@@ -1,0 +1,92 @@
+<div class="header">
+  <h2>Editar Pedido</h2>
+</div>
+
+<div class="form-container">
+  <div class="user-info">
+    <p>Usuario: {{ userName }}</p>
+    <p>ID: {{ usuarioId }}</p>
+  </div>
+
+  <form [formGroup]="editPedidoForm" (ngSubmit)="guardarCambios()">
+    <div class="form-group">
+      <label for="deliveryOption">Delivery</label>
+      <select id="deliveryOption" formControlName="deliveryOption" class="form-control">
+        <option value="" disabled>Selecciona una opción</option>
+        @for (option of deliveryOptions; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+      <div *ngIf="formControls['deliveryOption'].invalid && (formControls['deliveryOption'].dirty || formControls['deliveryOption'].touched)" class="text-danger">
+        <div *ngIf="formControls['deliveryOption'].errors?.['required']">La opción de delivery es requerida.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="product">Producto/s</label>
+      <select id="product" formControlName="product" class="form-control">
+        <option value="" disabled>Selecciona un producto</option>
+        @for (prod of products; track prod) {
+          <option [value]="prod">{{ prod }}</option>
+        }
+      </select>
+      <div *ngIf="formControls['product'].invalid && (formControls['product'].dirty || formControls['product'].touched)" class="text-danger">
+        <div *ngIf="formControls['product'].errors?.['required']">El producto es requerido.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="restaurant">Restaurante</label>
+      <select id="restaurant" formControlName="restaurant" class="form-control">
+        <option value="" disabled>Selecciona un restaurante</option>
+        @for (rest of restaurants; track rest) {
+          <option [value]="rest">{{ rest }}</option>
+        }
+      </select>
+      <div *ngIf="formControls['restaurant'].invalid && (formControls['restaurant'].dirty || formControls['restaurant'].touched)" class="text-danger">
+        <div *ngIf="formControls['restaurant'].errors?.['required']">El restaurante es requerido.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" formControlName="direccion" class="form-control" placeholder="Ej: Calle 123">
+      <div *ngIf="formControls['direccion'].invalid && (formControls['direccion'].dirty || formControls['direccion'].touched)" class="text-danger">
+        <div *ngIf="formControls['direccion'].errors?.['required']">La dirección es requerida.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="localidad">Localidad</label>
+      <select id="localidad" formControlName="localidad" class="form-control">
+        <option value="" disabled>Selecciona una localidad</option>
+        @for (loc of localidades; track loc) {
+          <option [value]="loc">{{ loc }}</option>
+        }
+      </select>
+      <div *ngIf="formControls['localidad'].invalid && (formControls['localidad'].dirty || formControls['localidad'].touched)" class="text-danger">
+        <div *ngIf="formControls['localidad'].errors?.['required']">La localidad es requerida.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="estado">Estado</label>
+      <select id="estado" formControlName="estado" class="form-control">
+        <option value="" disabled>Selecciona un estado</option>
+        @for (est of estados; track est) {
+          <option [value]="est">{{ est }}</option>
+        }
+      </select>
+      <div *ngIf="formControls['estado'].invalid && (formControls['estado'].dirty || formControls['estado'].touched)" class="text-danger">
+        <div *ngIf="formControls['estado'].errors?.['required']">El estado es requerido.</div>
+      </div>
+    </div>
+
+    <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="editPedidoForm.invalid">Guardar Cambios</button>
+    </div>
+  </form>
+</div>

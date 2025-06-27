@@ -8,8 +8,8 @@ volumes:
 
 services:
   # === SERVICIOS JWT (EJECUTAN PRIMERO) ===
-  
-  # 1. Base de datos JWT
+
+# 1. Base de datos JWT
   db:
     image: postgres:alpine
     container_name: trabajojwt-db
@@ -22,15 +22,15 @@ services:
       - "4444:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 2s
       retries: 5
+    networks:
+      - net
 
-  # 2. Servicio JWT
+# 2. Servicio JWT
   jwt:
     build:
       context: ./JWT
@@ -47,7 +47,7 @@ services:
     networks:
       - net
 
-  # 3. Inicialización de DB JWT
+# 3. Inicialización de DB JWT
   db-init:
     image: postgres:alpine
     container_name: db-init
@@ -65,18 +65,21 @@ services:
         echo 'Database already initialized, skipping...'
       fi
       "
+
     environment:
       POSTGRES_PASSWORD: postgres
+
     volumes:
       - ./JWT/sql/init.sql:/init.sql:ro
       - postgres_data:/shared
+
     networks:
       - net
     restart: "no"
 
-  # === SERVICIOS BACKEND PRINCIPAL (EJECUTAN DESPUÉS) ===
-  
-  # 4. Base de datos principal
+# === SERVICIOS BACKEND PRINCIPAL (EJECUTAN DESPUÉS) ===
+
+# 4. Base de datos principal
   database:
     image: postgres:alpine
     environment:
@@ -100,7 +103,7 @@ services:
       db-init:
         condition: service_completed_successfully
 
-  # 5. Backend principal
+# 5. Backend principal
   backend:
     build: 
       context: ./backendTPI
@@ -124,3 +127,21 @@ services:
     networks:
       - net
     restart: unless-stopped
+
+# 6. Frontend Angular
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: ./dockerfile
+    ports:
+    - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - net

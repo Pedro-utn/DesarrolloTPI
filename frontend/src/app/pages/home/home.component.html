@@ -1,0 +1,23 @@
+<!-- home.component.html -->
+
+<div class="home-page-wrapper">
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h1 class="fw-bold">Explorá las mejores opciones</h1>
+      <p class="text-muted">Descubrí lo más pedido cerca tuyo</p>
+
+      <div class="d-flex justify-content-center mt-3 gap-2">
+        <button class="btn btn-info" (click)="goToEditPedido('123')">
+          Editar Pedido
+        </button>
+
+        <button class="btn btn-info" (click)="goToNuevoPedido()">
+          Nuevo Pedido
+        </button>
+        <button class="btn btn-primary" routerLink="/lista-pedidos">
+          Ver Lista de Pedidos
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

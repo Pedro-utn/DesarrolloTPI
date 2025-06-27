@@ -1,0 +1,173 @@
+/* Contenedor principal que abarca toda la pantalla y maneja el diseño de dos columnas */
+.page-container {
+  display: flex; /* Habilitar Flexbox para las columnas */
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  width: 100vw; /* Asegura que ocupe todo el ancho de la ventana */
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+}
+
+/* Columna de la izquierda (imagen) */
+.left-panel {
+  flex: 1; /* Ocupa el espacio disponible */
+  background: linear-gradient(to bottom right, #ff7e5f, #feb47b); /* Fondo degradado de la imagen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.left-panel img {
+  max-width: 80%; /* Ajusta el tamaño de la imagen */
+  height: auto;
+  animation: float 3s ease-in-out infinite; /* Animación flotante opcional */
+}
+
+/* Columna de la derecha (formulario) */
+.right-panel {
+  flex: 1; /* Ocupa el otro espacio disponible */
+  background-color: #fff; /* Fondo blanco para el formulario */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.login-form-wrapper,
+.register-form-wrapper {
+  width: 100%;
+  max-width: 400px; /* Ancho máximo para el formulario */
+  padding: 40px; /* Más padding para el contenido del formulario */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+  text-align: center;
+}
+
+.login-form-wrapper h2,
+.register-form-wrapper h2 {
+  font-size: 2.2em;
+  margin-bottom: 30px;
+  color: #333;
+  position: relative; /* Para la línea debajo del título */
+}
+
+/* Línea debajo del título (como en la imagen) */
+.login-form-wrapper h2::after,
+.register-form-wrapper h2::after {
+  content: '';
+  display: block;
+  width: 60px; /* Ancho de la línea */
+  height: 3px;
+  background-color: #ff7e5f; /* Color de la línea, a juego con el degradado */
+  margin: 10px auto 0; /* Centrar y separar */
+}
+
+.form-group {
+  margin-bottom: 25px; /* Más espacio entre grupos de formulario */
+  text-align: left; /* Alinear etiquetas a la izquierda */
+}
+
+.form-group label {
+  display: none; /* Oculta las etiquetas si los placeholders son suficientes */
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px; /* Más padding para los inputs */
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Bordes más suaves */
+  box-sizing: border-box;
+  font-size: 1.1em;
+  color: #555;
+}
+
+.form-control::placeholder { /* Estilo para el placeholder */
+  color: #aaa;
+}
+
+.form-control:focus {
+  border-color: #ff7e5f; /* Color del borde al enfocar */
+  box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
+  outline: none;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.9em;
+  margin-top: 5px;
+  text-align: left;
+}
+
+.btn-submit { /* Botón principal de acción */
+  width: 100%;
+  padding: 12px;
+  background-color: #6c757d; /* Color gris oscuro como en la imagen */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.btn-submit:hover {
+  background-color: #5a6268;
+}
+
+.btn-submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #007bff; /* Un azul estándar para enlaces */
+  text-decoration: none;
+  font-size: 1.05em;
+  font-weight: 500;
+}
+
+.form-link:hover {
+  text-decoration: underline;
+}
+
+/* Animación flotante para la imagen */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Media Queries para dispositivos más pequeños */
+@media (max-width: 768px) {
+  .page-container {
+    flex-direction: column; /* Apilar las columnas verticalmente en móviles */
+  }
+
+  .left-panel {
+    min-height: 250px; /* Altura mínima para la imagen en móviles */
+    padding: 15px;
+  }
+
+  .right-panel {
+    padding: 15px;
+  }
+
+  .login-form-wrapper,
+  .register-form-wrapper {
+    padding: 25px;
+    box-shadow: none; /* Eliminar sombra en móviles para un look más limpio */
+  }
+}

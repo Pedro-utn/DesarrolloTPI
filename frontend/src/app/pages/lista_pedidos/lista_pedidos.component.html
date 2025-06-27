@@ -1,0 +1,53 @@
+<div class="header">
+  <h2>Órdenes</h2>
+  <div class="actions-group">
+    <button class="btn btn-secondary" (click)="verPedido()" [disabled]="!pedidoSeleccionado">Ver Pedido</button>
+    <button class="btn btn-info" (click)="editarPedido()" [disabled]="!pedidoSeleccionado">Editar Pedido</button>
+    <button class="btn btn-danger" (click)="eliminarPedido()" [disabled]="!pedidoSeleccionado">Eliminar Pedido</button>
+    <button class="btn btn-primary" (click)="agregarPedido()">Agregar Pedido</button>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>ID Pedido</th>
+        <th>Estado</th>
+        <th>Delivery</th>
+        <th>Producto/s</th>
+        <th>Restaurante</th>
+        <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody>
+      @for(pedido of pedidosPaginados; track pedido.id){
+        <tr (click)="seleccionarPedido(pedido)" [class.selected]="pedido === pedidoSeleccionado">
+          <td>{{ pedido.id }}</td>
+          <td>{{ pedido.estado }}</td>
+          <td>{{ pedido.delivery || 'Null' }}</td> <td>{{ pedido.productos }}</td>
+          <td>{{ pedido.restaurante }}</td>
+          <td>{{ pedido.direccion }}</td>
+        </tr>
+      }
+      @empty {
+        <tr>
+          <td colspan="6" class="text-center">No hay pedidos para mostrar.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="pagination-container">
+    <button class="pagination-btn" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1">Anterior</button>
+    @for(pagina of paginasArray; track pagina){
+      <button
+        class="pagination-btn"
+        [class.active]="pagina === paginaActual"
+        (click)="cambiarPagina(pagina)">
+        {{ pagina }}
+      </button>
+    }
+    <button class="pagination-btn" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">Siguiente</button>
+  </div>
+</div>

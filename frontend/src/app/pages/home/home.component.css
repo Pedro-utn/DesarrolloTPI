@@ -1,0 +1,130 @@
+/* home.component.css */
+
+/* Contenedor principal que abarca toda la pantalla con el degradado del login */
+.home-page-wrapper {
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  width: 100vw; /* Asegura que ocupe todo el ancho de la ventana */
+  background: linear-gradient(to bottom right, #ff7e5f, #feb47b); /* Fondo degradado del login */
+  display: flex; /* Para centrar el contenido principal */
+  flex-direction: column; /* Organiza los elementos en columna */
+  align-items: center; /* Centra horizontalmente el contenido de la columna */
+  padding: 40px 20px; /* Restaurado el padding original */
+  box-sizing: border-box; /* Incluye padding en el ancho/alto */
+  overflow-y: auto; /* Permite desplazamiento si el contenido es muy largo */
+  color: white; /* Color de texto predeterminado para el contenedor principal */
+  font-family: 'Inter', sans-serif; /* Usar la fuente Inter para consistencia */
+  text-align: center; /* Centrar el texto por defecto en el wrapper */
+}
+
+/* Estilos para el texto dentro del home, respetando la colorimetría */
+.home-page-wrapper h1 {
+  color: white; /* Títulos en blanco para contrastar con el degradado */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+  font-weight: bold; /* Asegura que el font-weight se mantenga */
+  font-size: 3em; /* Tamaño de fuente para el título */
+  margin-bottom: 20px; /* Espacio debajo del título */
+}
+
+.home-page-wrapper p {
+  font-size: 1.2em;
+  line-height: 1.6;
+}
+
+.home-page-wrapper p.text-muted {
+  color: rgba(255, 255, 255, 0.8) !important; /* Adaptar text-muted a blanco con opacidad */
+}
+
+/* Estilos para los botones, adaptando a la colorimetría del login */
+.home-page-wrapper .btn-info {
+  background-color: #6c757d; /* Color gris oscuro de los botones del login */
+  border-color: #6c757d; /* Borde del mismo color */
+  color: white; /* Texto blanco */
+  font-weight: bold; /* Misma fuente que los botones de login */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transición suave y efecto al presionar */
+  padding: 12px 25px; /* Padding para los botones */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */
+}
+
+.home-page-wrapper .btn-info:hover {
+  background-color: #5a6268; /* Color de hover del login */
+  border-color: #5a6268;
+  transform: translateY(-2px); /* Pequeño levantamiento al pasar el ratón */
+}
+
+.home-page-wrapper .btn-info:active {
+  transform: translateY(0); /* Vuelve a la posición original al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra más pequeña al hacer clic */
+}
+
+.home-page-wrapper .btn-primary {
+  background-color: #ff7e5f; /* Usar el color principal del degradado para el botón principal */
+  border-color: #ff7e5f;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 12px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-page-wrapper .btn-primary:hover {
+  background-color: #e66a4f; /* Un tono un poco más oscuro para el hover */
+  border-color: #e66a4f;
+  transform: translateY(-2px);
+}
+
+.home-page-wrapper .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajustes para el .container de Bootstrap */
+.container.py-5 {
+  background-color: rgba(255, 255, 255, 0.1); /* Un fondo ligeramente transparente para el contenido principal */
+  border-radius: 15px; /* Bordes redondeados */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Sombra para el contenedor */
+  padding: 40px !important; /* Padding uniforme para el contenedor */
+  margin-top: 30px; /* Espacio desde la parte superior del wrapper */
+  margin-bottom: 30px; /* Espacio hacia la parte inferior del wrapper */
+  max-width: 800px; /* Limita el ancho del contenedor para un mejor diseño */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-center.mb-5 {
+  width: 100%; /* Asegura que el contenido centralizado ocupe todo el ancho del contenedor padre */
+}
+
+.d-flex.justify-content-center.mt-3.gap-2 {
+  flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+  justify-content: center; /* Asegura el centrado incluso si se envuelven */
+  gap: 15px; /* Espacio entre los botones */
+}
+
+/* Media Queries para dispositivos más pequeños */
+@media (max-width: 768px) {
+  .home-page-wrapper {
+    padding: 20px 15px; /* Menos padding en móviles */
+  }
+
+  .home-page-wrapper h1 {
+    font-size: 2em; /* Título más pequeño en móviles */
+  }
+
+  .home-page-wrapper p {
+    font-size: 1em;
+  }
+
+  .container.py-5 {
+    padding: 25px !important;
+  }
+
+  .d-flex.justify-content-center.mt-3.gap-2 .btn {
+    width: 100%; /* Botones de ancho completo en móviles */
+    max-width: 250px; /* Limita el ancho máximo para evitar botones demasiado anchos */
+  }
+}
