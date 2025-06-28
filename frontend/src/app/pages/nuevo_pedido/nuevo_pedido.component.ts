@@ -1,24 +1,22 @@
+// src/app/pages/nuevo_pedido/nuevo_pedido.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Importa Router
-import { HttpClient, HttpHeaders, HttpClientModule  } from '@angular/common/http'; // ¡Esto es nuevo!
-
-@Component({
-  selector: 'app-nuevo-pedido',
-  standalone: true, //Configuración de StandAlone components
-  imports: [CommonModule, FormsModule, HttpClientModule],
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms'; // Importa ReactiveFormsModule y AbstractControl
+import { FormGroup, FormControl, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http'; // Asegúrate de que esto esté aquí si no está en app.config.ts
 
-// Custom validator for comma-separated numbers
+// Importa los nuevos servicios
+import { AuthService } from '../../services/auth.service';
+import { OrderService } from '../../services/OrderService'; // <-- Importa el nuevo OrderService del frontend
+
+// Custom validator for comma-separated numbers (mantenemos esto aquí, es específico del form)
 function commaSeparatedNumbersValidator(control: AbstractControl): { [key: string]: any } | null {
   const value = control.value;
   if (!value) {
-    return null; // Let Validators.required handle empty value
+    return null;
   }
   const parts = value.split(',').map((part: string) => part.trim());
-  // Check if all parts are valid numbers and not empty strings after trimming
   const allNumbers = parts.every((part: string) => !isNaN(Number(part)) && part !== '');
   if (!allNumbers) {
     return { 'commaSeparatedNumbers': { value: control.value } };
@@ -26,11 +24,11 @@ function commaSeparatedNumbersValidator(control: AbstractControl): { [key: strin
   return null;
 }
 
-// Interfaz que representa el payload exacto que el backend espera para el POST /order
+// Interfaz para el payload de la orden (la misma que en el OrderService)
 interface NewOrderRequest {
   userId: string;
   restaurantId: number;
-  products: number[]; // <--- array de números
+  products: number[];
   location: {
     street: string;
     number: string;
@@ -45,24 +43,37 @@ interface NewOrderRequest {
 @Component({
   selector: 'app-nuevo-pedido',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule], // HttpClientModule debe estar importado si no se provee globalmente
   templateUrl: './nuevo_pedido.component.html',
   styleUrls: ['./nuevo_pedido.component.css']
 })
 export class NuevoPedidoComponent implements OnInit {
 
-  usuarioId: string = '03';
-  userName: string = 'Pedro';
+  usuarioId: string = '03'; // Esto debería venir de AuthService
+  userName: string = 'Pedro'; // Esto debería venir de AuthService
 
   newPedidoForm!: FormGroup;
   errorMessage: string = '';
 
-  constructor(private router: Router, private http: HttpClient) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService, // Inyecta AuthService
+    private orderService: OrderService // <-- Inyecta el nuevo OrderService
+  ) { }
 
   ngOnInit(): void {
+    // Aquí puedes intentar obtener userId y userName del AuthService
+    // Por ejemplo, si tu token contiene estos datos, podrías tener un método
+    // en AuthService para decodificarlo o devolver un objeto de usuario.
+    // Para simplificar, los mantenemos hardcodeados por ahora si no tienes esa lógica.
+    // this.usuarioId = this.authService.getUserId() || '03';
+    // this.userName = this.authService.getUserName() || 'Pedro';
+
     this.newPedidoForm = new FormGroup({
+      // Validators.pattern(/^\d+$/) asegura que solo sean dígitos para números enteros.
+      // Para lat/lng, el pattern permite números con decimales y signo negativo.
       restaurantId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]),
-      productsInput: new FormControl('', [Validators.required, commaSeparatedNumbersValidator]), // <--- Nuevo FormControl para la entrada de productos como string
+      productsInput: new FormControl('', [Validators.required, commaSeparatedNumbersValidator]),
       location: new FormGroup({
         street: new FormControl('', Validators.required),
         number: new FormControl('', Validators.required),
@@ -76,78 +87,66 @@ export class NuevoPedidoComponent implements OnInit {
   }
 
   agregarPedido() {
-    // Aquí iría la lógica para enviar el pedido al backend
-    const pedido = {
-      userId: this.usuarioId,
-      userName: this.userName,
-      deliveryOption: this.deliveryOption,
-      product: this.selectedProduct,
-      restaurant: this.selectedRestaurant,
-      direccion: this.direccion,
-      localidad: this.localidad
-    };
-    
-    //Define los encabezados de la solicitud
-    const httpOption = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    }
-
-    //URL de la API REST
-    const apiUrl = 'http://localhost:3000/order';
-  
-    //Realiza la solicitud POST a la API
-    this.http.post(apiUrl, pedido, httpOption).subscribe({
-      next: (response) => {
-        console.log('Pedido agregado con exito:', response);
-        this.router.navigate(['/home']); //Redirige la pagina de home
-      },
-      error: (error) => {
-        console.error('Error al agregar el pedido:', error);
-      }
-    });
     this.errorMessage = '';
-    if (this.newPedidoForm.valid) {
-      const formValues = this.newPedidoForm.value;
 
-      // Parsear la cadena de productos a un array de números
-      const productIds: number[] = formValues.productsInput.split(',')
-                                    .map((idStr: string) => parseInt(idStr.trim(), 10)) // Renombrado a idStr para claridad
-                                    .filter((id: number) => !isNaN(id)); // Filtrar cualquier NaN si la entrada no es válida, con tipo explícito
-
-      const pedidoParaAPI: NewOrderRequest = {
-        userId: this.usuarioId,
-        restaurantId: parseInt(formValues.restaurantId, 10),
-        products: productIds, // <--- Asignar el array de números
-        location: {
-          street: formValues.location.street,
-          number: formValues.location.number,
-          cityId: parseInt(formValues.location.cityId, 10),
-          location: {
-            lat: parseFloat(formValues.location.location.lat),
-            lng: parseFloat(formValues.location.location.lng)
-          }
-        }
-      };
-
-      console.log('Pedido a agregar (para API):', pedidoParaAPI);
-
-      // Simular envío de datos
-      alert('Pedido agregado con éxito (simulado)!');
-      this.router.navigate(['/home']);
-    } else {
+    if (this.newPedidoForm.invalid) {
       this.errorMessage = 'Por favor, completa todos los campos correctamente.';
       this.newPedidoForm.markAllAsTouched();
+      return;
     }
+
+    // Obtener los valores del formulario
+    const formValues = this.newPedidoForm.value;
+
+    // Parsear la cadena de productos a un array de números
+    const productIds: number[] = formValues.productsInput.split(',')
+                                                          .map((idStr: string) => parseInt(idStr.trim(), 10))
+                                                          .filter((id: number) => !isNaN(id));
+
+    // Construir el payload de la solicitud HTTP
+    const pedidoParaAPI: NewOrderRequest = {
+      userId: this.usuarioId, // Obtener del AuthService en una aplicación real
+      restaurantId: parseInt(formValues.restaurantId, 10),
+      products: productIds,
+      location: {
+        street: formValues.location.street,
+        number: formValues.location.number,
+        cityId: parseInt(formValues.location.cityId, 10),
+        location: {
+          lat: parseFloat(formValues.location.location.lat),
+          lng: parseFloat(formValues.location.location.lng)
+        }
+      }
+    };
+
+    console.log('Pedido a enviar a la API:', pedidoParaAPI);
+
+    // Llamar al servicio para crear el pedido
+    this.orderService.createOrder(pedidoParaAPI).subscribe({
+      next: (response) => {
+        console.log('Pedido agregado con éxito:', response);
+        alert('Pedido agregado con éxito!'); // Usar un modal en lugar de alert en prod
+        this.router.navigate(['/home']);
+      },
+      error: (error: Error) => { // Especificamos el tipo de error como Error
+        console.error('Error al agregar el pedido en el componente:', error);
+        // Si el error es por token, el AuthService.getAuthHeaders ya lo debería manejar.
+        // Aquí mostramos el mensaje de error general o más específico si el servicio lo devuelve.
+        this.errorMessage = error.message || 'Hubo un problema al agregar el pedido.';
+        // Si el error indica que la sesión expiró (ej. 401), forzamos logout
+        if (error.message.includes('Acceso denegado') || error.message.includes('No autorizado')) {
+          this.authService.logout();
+        }
+      }
+    });
   }
-  
 
   cancelar() {
     console.log('Creación de pedido cancelada.');
     this.router.navigate(['/home']);
   }
 
+  // Getters para acceder a los controles del formulario en el HTML
   get formControls() {
     return this.newPedidoForm.controls;
   }

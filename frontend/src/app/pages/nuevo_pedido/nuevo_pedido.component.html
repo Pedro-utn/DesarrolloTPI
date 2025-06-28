@@ -22,14 +22,15 @@
 
       <!-- Campo para Producto/s -->
       <div class="form-group">
-        <label for="product">Producto/s</label>
-        <input type="text" id="product" formControlName="product" class="form-control" placeholder="Ej: 1, 2, 3...">
-        <div *ngIf="formControls['product'].invalid && (formControls['product'].dirty || formControls['product'].touched)" class="text-danger">
-          <div *ngIf="formControls['product'].errors?.['required']">El producto es requerido.</div>
+        <label for="productsInput">Producto/s</label>
+        <input type="text" id="productsInput" formControlName="productsInput" class="form-control" placeholder="Ej: 1, 2, 3...">
+        <div *ngIf="formControls['productsInput'].invalid && (formControls['productsInput'].dirty || formControls['productsInput'].touched)" class="text-danger">
+          <div *ngIf="formControls['productsInput'].errors?.['required']">El producto es requerido.</div>
+          <div *ngIf="formControls['productsInput'].errors?.['commaSeparatedNumbers']">Formato inválido. Ingresa números separados por comas (ej: 1, 2, 3).</div>
         </div>
       </div>
 
-      <!-- Sección de Ubicación (Location) -->
+      <!-- Sección de Ubicación (L  ocation) -->
       <div formGroupName="location">
         <h3>Información de Ubicación</h3>
 

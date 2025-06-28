@@ -1,9 +1,11 @@
+// src/app/services/auth.service.ts
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http'; // <-- Importa HttpClient y HttpHeaders
-import { catchError, tap } from 'rxjs/operators'; // <-- Importa operadores de RxJS
-import { throwError } from 'rxjs'; // <-- Importa throwError para manejo de errores
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +18,8 @@ export class AuthService {
   // Si tu microservicio corre en localhost:3000, sería algo así:
   private apiUrl = 'http://localhost:3001'; // Ajusta esto a la URL real de tu backend
 
-  constructor(private router: Router, private http: HttpClient) { // <-- Inyecta HttpClient
-    const token = localStorage.getItem('accessToken'); // Cambiado a 'accessToken'
+  constructor(private router: Router, private http: HttpClient) {
+    const token = localStorage.getItem('accessToken');
     if (token) {
       this._isLoggedIn.next(true);
     }
@@ -94,6 +96,30 @@ export class AuthService {
     localStorage.removeItem('refreshToken'); // Eliminar refreshToken
     this._isLoggedIn.next(false);
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Obtiene el token de acceso (accessToken) almacenado en el localStorage.
+   * @returns El token de acceso como string, o null si no se encuentra.
+   */
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  /**
+   * Retorna un objeto HttpHeaders con el token de autenticación para solicitudes a la API.
+   * Incluye el 'Content-Type' como 'application/json' y el 'Authorization' como 'Bearer Token'.
+   * @returns HttpHeaders | null - Los headers configurados, o null si no hay un token de acceso disponible.
+   */
+  getAuthHeaders(): HttpHeaders | null {
+    const token = this.getAccessToken(); // Llama al método para obtener el token
+    if (token) {
+      return new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Adjunta el token con el prefijo 'Bearer'
+      });
+    }
+    return null; // Si no hay token, retorna null
   }
 
   isAuthenticated(): boolean {
