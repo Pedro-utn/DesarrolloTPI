@@ -60,7 +60,8 @@
 }
 
 .form-group input[type="text"],
-.form-group select {
+.form-group input[type="number"],
+.form-group select { /* Añadido input[type="number"] */
   width: calc(100% - 20px); /* Ajuste para el padding */
   padding: 10px;
   border: 1px solid #ccc;
@@ -70,7 +71,8 @@
 }
 
 .form-group input[type="text"]:focus,
-.form-group select:focus {
+.form-group input[type="number"]:focus,
+.form-group select:focus { /* Añadido input[type="number"] */
   outline: none;
   border-color: #ff6b6b;
   box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);

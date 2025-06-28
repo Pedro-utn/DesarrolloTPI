@@ -9,76 +9,70 @@
   </div>
 
   <form [formGroup]="editPedidoForm" (ngSubmit)="guardarCambios()">
-    <div class="form-group">
-      <label for="deliveryOption">Delivery</label>
-      <select id="deliveryOption" formControlName="deliveryOption" class="form-control">
-        <option value="" disabled>Selecciona una opción</option>
-        @for (option of deliveryOptions; track option) {
-          <option [value]="option">{{ option }}</option>
-        }
-      </select>
-      <div *ngIf="formControls['deliveryOption'].invalid && (formControls['deliveryOption'].dirty || formControls['deliveryOption'].touched)" class="text-danger">
-        <div *ngIf="formControls['deliveryOption'].errors?.['required']">La opción de delivery es requerida.</div>
-      </div>
-    </div>
 
+    <!-- Campo de Estado (Status) -->
     <div class="form-group">
-      <label for="product">Producto/s</label>
-      <select id="product" formControlName="product" class="form-control">
-        <option value="" disabled>Selecciona un producto</option>
-        @for (prod of products; track prod) {
-          <option [value]="prod">{{ prod }}</option>
-        }
-      </select>
-      <div *ngIf="formControls['product'].invalid && (formControls['product'].dirty || formControls['product'].touched)" class="text-danger">
-        <div *ngIf="formControls['product'].errors?.['required']">El producto es requerido.</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="restaurant">Restaurante</label>
-      <select id="restaurant" formControlName="restaurant" class="form-control">
-        <option value="" disabled>Selecciona un restaurante</option>
-        @for (rest of restaurants; track rest) {
-          <option [value]="rest">{{ rest }}</option>
-        }
-      </select>
-      <div *ngIf="formControls['restaurant'].invalid && (formControls['restaurant'].dirty || formControls['restaurant'].touched)" class="text-danger">
-        <div *ngIf="formControls['restaurant'].errors?.['required']">El restaurante es requerido.</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="direccion">Dirección</label>
-      <input type="text" id="direccion" formControlName="direccion" class="form-control" placeholder="Ej: Calle 123">
-      <div *ngIf="formControls['direccion'].invalid && (formControls['direccion'].dirty || formControls['direccion'].touched)" class="text-danger">
-        <div *ngIf="formControls['direccion'].errors?.['required']">La dirección es requerida.</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="localidad">Localidad</label>
-      <select id="localidad" formControlName="localidad" class="form-control">
-        <option value="" disabled>Selecciona una localidad</option>
-        @for (loc of localidades; track loc) {
-          <option [value]="loc">{{ loc }}</option>
-        }
-      </select>
-      <div *ngIf="formControls['localidad'].invalid && (formControls['localidad'].dirty || formControls['localidad'].touched)" class="text-danger">
-        <div *ngIf="formControls['localidad'].errors?.['required']">La localidad es requerida.</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="estado">Estado</label>
-      <select id="estado" formControlName="estado" class="form-control">
+      <label for="status">Estado</label>
+      <select id="status" formControlName="status" class="form-control">
         <option value="" disabled>Selecciona un estado</option>
         @for (est of estados; track est) {
           <option [value]="est">{{ est }}</option>
         }
       </select>
-      <div *ngIf="formControls['estado'].invalid && (formControls['estado'].dirty || formControls['estado'].touched)" class="text-danger">
-        <div *ngIf="formControls['estado'].errors?.['required']">El estado es requerido.</div>
+      <div *ngIf="formControls['status'].invalid && (formControls['status'].dirty || formControls['status'].touched)" class="text-danger">
+        <div *ngIf="formControls['status'].errors?.['required']">El estado es requerido.</div>
+      </div>
+    </div>
+
+    <!-- Sección de Ubicación (Location) -->
+    <div formGroupName="location">
+      <h3>Información de Ubicación</h3>
+
+      <div class="form-group">
+        <label for="street">Calle</label>
+        <input type="text" id="street" formControlName="street" class="form-control" placeholder="Ej: Av. Nueva">
+        <div *ngIf="locationControls['street'].invalid && (locationControls['street'].dirty || locationControls['street'].touched)" class="text-danger">
+          <div *ngIf="locationControls['street'].errors?.['required']">La calle es requerida.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="number">Número</label>
+        <input type="text" id="number" formControlName="number" class="form-control" placeholder="Ej: 843">
+        <div *ngIf="locationControls['number'].invalid && (locationControls['number'].dirty || locationControls['number'].touched)" class="text-danger">
+          <div *ngIf="locationControls['number'].errors?.['required']">El número es requerido.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cityId">ID de Ciudad</label>
+        <input type="number" id="cityId" formControlName="cityId" class="form-control" placeholder="Ej: 2">
+        <div *ngIf="locationControls['cityId'].invalid && (locationControls['cityId'].dirty || locationControls['cityId'].touched)" class="text-danger">
+          <div *ngIf="locationControls['cityId'].errors?.['required']">El ID de ciudad es requerido.</div>
+          <div *ngIf="locationControls['cityId'].errors?.['pattern']">El ID de ciudad debe ser un número.</div>
+        </div>
+      </div>
+
+      <!-- Sección de Latitud y Longitud (nested location) -->
+      <div formGroupName="location">
+        <h4>Coordenadas Geográficas</h4>
+        <div class="form-group">
+          <label for="lat">Latitud</label>
+          <input type="number" id="lat" formControlName="lat" class="form-control" placeholder="Ej: -32.0">
+          <div *ngIf="nestedLocationControls['lat'].invalid && (nestedLocationControls['lat'].dirty || nestedLocationControls['lat'].touched)" class="text-danger">
+            <div *ngIf="nestedLocationControls['lat'].errors?.['required']">La latitud es requerida.</div>
+            <div *ngIf="nestedLocationControls['lat'].errors?.['pattern']">La latitud debe ser un número.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lng">Longitud</label>
+          <input type="number" id="lng" formControlName="lng" class="form-control" placeholder="Ej: -63.1">
+          <div *ngIf="nestedLocationControls['lng'].invalid && (nestedLocationControls['lng'].dirty || nestedLocationControls['lng'].touched)" class="text-danger">
+            <div *ngIf="nestedLocationControls['lng'].errors?.['required']">La longitud es requerida.</div>
+            <div *ngIf="nestedLocationControls['lng'].errors?.['pattern']">La longitud debe ser un número.</div>
+          </div>
+        </div>
       </div>
     </div>
 
