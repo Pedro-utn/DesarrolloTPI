@@ -38,15 +38,17 @@ services:
     container_name: backend-jwt
     ports:
       - "3001:3001"
+    volumes:
+      - ./JWT:/usr/src/app          # ← Agregar bind mount
+      - /usr/src/app/node_modules   # ← Evitar conflictos con node_modules
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development        # ← Cambiar a development para hot-reload
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     networks:
       - net
-
 # 3. Inicialización de DB JWT
   db-init:
     image: postgres:alpine
