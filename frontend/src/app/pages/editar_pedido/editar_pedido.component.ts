@@ -3,17 +3,42 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 
-// Simulación de una interfaz para el Pedido
-interface Pedido {
+// Interfaz para la estructura del payload de la API para la actualización (PUT)
+interface OrderUpdateRequest {
+  status: string;
+  location: {
+    street: string;
+    number: string;
+    cityId: number;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
+// Interfaz extendida para la representación completa del pedido en el frontend (podría venir de un GET /order/:id)
+// He mantenido los campos originales que tenías, asumiendo que un GET de la API podría devolver más datos.
+// Pero para el PUT, solo se enviarán 'status' y 'location'.
+interface PedidoFrontend {
   id: string;
   userId: string;
   userName: string;
-  deliveryOption: string;
-  product: string;
-  restaurant: string;
-  direccion: string;
-  localidad: string;
-  estado: string;
+  deliveryOption: string; // Mantenido para simular la carga completa si fuera necesario
+  product: string; // Mantenido para simular la carga completa si fuera necesario
+  restaurant: string; // Mantenido para simular la carga completa si fuera necesario
+  direccion: string; // Mantenido para simular la carga completa si fuera necesario (aunque se mapeará a street/number)
+  localidad: string; // Mantenido para simular la carga completa si fuera necesario (aunque se mapeará a cityId)
+  status: string; // Renombrado de 'estado' a 'status'
+  location: { // Nuevo campo 'location'
+    street: string;
+    number: string;
+    cityId: number;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
 }
 
 @Component({
@@ -28,12 +53,8 @@ export class EditarPedidoComponent implements OnInit {
   editPedidoForm!: FormGroup;
   errorMessage: string = '';
 
-  // Datos simulados para los selectores
-  deliveryOptions: string[] = ['A domicilio', 'Retiro en local'];
-  products: string[] = ['Pizza', 'Hamburguesa', 'Ensalada', 'Sushi'];
-  restaurants: string[] = ['Restaurante A', 'Restaurante B', 'Restaurante C'];
-  localidades: string[] = ['Villa María', 'Córdoba Capital', 'Buenos Aires'];
-  estados: string[] = ['Pendiente', 'En Progreso', 'Entregado', 'Cancelado']; // ✅ Opciones para el estado
+  // Opciones para el estado (status)
+  estados: string[] = ['pending', 'in_progress', 'delivered', 'cancelled'];
 
   // Datos de usuario simulados (podrían venir del AuthService)
   usuarioId: string = '03';
@@ -46,14 +67,18 @@ export class EditarPedidoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Inicializar el formulario reactivo
+    // Inicializar el formulario reactivo con la nueva estructura
     this.editPedidoForm = new FormGroup({
-      deliveryOption: new FormControl('', Validators.required),
-      product: new FormControl('', Validators.required),
-      restaurant: new FormControl('', Validators.required),
-      direccion: new FormControl('', Validators.required),
-      localidad: new FormControl('', Validators.required),
-      estado: new FormControl('', Validators.required) // ✅ Campo de estado para el formulario
+      status: new FormControl('', Validators.required), // Campo para el estado
+      location: new FormGroup({ // Grupo para los datos de ubicación
+        street: new FormControl('', Validators.required),
+        number: new FormControl('', Validators.required),
+        cityId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]), // cityId como número
+        location: new FormGroup({ // Grupo anidado para latitud y longitud
+          lat: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)]), // latitud como número
+          lng: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)]) // longitud como número
+        })
+      })
     });
 
     // Obtener el ID del pedido de la URL
@@ -64,7 +89,6 @@ export class EditarPedidoComponent implements OnInit {
     } else {
       this.errorMessage = 'No se proporcionó un ID de pedido para editar.';
       console.error(this.errorMessage);
-      // Redirigir o manejar el error
       this.router.navigate(['/home']);
     }
   }
@@ -74,8 +98,21 @@ export class EditarPedidoComponent implements OnInit {
     console.log(`Cargando pedido con ID: ${id}`);
     // En una aplicación real, aquí se haría una llamada al ApiService:
     // this.apiService.getPedidoById(id).subscribe(
-    //   (pedido: Pedido) => {
-    //     this.editPedidoForm.patchValue(pedido); // Rellenar el formulario con los datos del pedido
+    //   (pedido: PedidoFrontend) => {
+    //     // Mapear los datos de la API a la estructura del formulario si es necesario
+    //     // Por ejemplo, si 'direccion' en tu API original era 'street' y 'number'
+    //     this.editPedidoForm.patchValue({
+    //       status: pedido.status,
+    //       location: {
+    //         street: pedido.location.street,
+    //         number: pedido.location.number,
+    //         cityId: pedido.location.cityId,
+    //         location: {
+    //           lat: pedido.location.location.lat,
+    //           lng: pedido.location.location.lng
+    //         }
+    //       }
+    //     });
     //   },
     //   (error) => {
     //     console.error('Error al cargar el pedido:', error);
@@ -84,37 +121,56 @@ export class EditarPedidoComponent implements OnInit {
     // );
 
     // Para la simulación:
-    const mockPedido: Pedido = {
+    const mockPedido: PedidoFrontend = {
       id: id,
       userId: this.usuarioId,
       userName: this.userName,
-      deliveryOption: 'A domicilio',
-      product: 'Hamburguesa',
-      restaurant: 'Restaurante B',
-      direccion: 'Marcos Juarez 941',
-      localidad: 'Villa María',
-      estado: 'En Progreso' // Estado inicial simulado
+      deliveryOption: 'A domicilio', // Campo original mantenido para simulación completa
+      product: 'Hamburguesa', // Campo original mantenido para simulación completa
+      restaurant: 'Restaurante B', // Campo original mantenido para simulación completa
+      direccion: 'Marcos Juarez 941', // Campo original mantenido para simulación completa
+      localidad: 'Villa María', // Campo original mantenido para simulación completa
+      status: 'in_progress', // Estado inicial simulado según la nueva interfaz
+      location: {
+        street: 'Av. Nueva',
+        number: '843',
+        cityId: 2,
+        location: {
+          lat: -32.0,
+          lng: -63.1
+        }
+      }
     };
-    this.editPedidoForm.patchValue(mockPedido); // Rellenar el formulario con datos simulados
+    // PatchValue directamente con la estructura del formulario
+    this.editPedidoForm.patchValue({
+      status: mockPedido.status,
+      location: {
+        street: mockPedido.location.street,
+        number: mockPedido.location.number,
+        cityId: mockPedido.location.cityId,
+        location: {
+          lat: mockPedido.location.location.lat,
+          lng: mockPedido.location.location.lng
+        }
+      }
+    });
     console.log('Pedido simulado cargado:', mockPedido);
   }
 
   async guardarCambios() {
     this.errorMessage = '';
     if (this.editPedidoForm.valid && this.pedidoId) {
-      const pedidoActualizado: Pedido = {
-        id: this.pedidoId,
-        userId: this.usuarioId, // Mantener userId
-        userName: this.userName, // Mantener userName
-        ...this.editPedidoForm.value // Obtener todos los valores del formulario
-      };
-      console.log('Guardando cambios del pedido:', pedidoActualizado);
+      // El payload para la API debe coincidir exactamente con OrderUpdateRequest
+      const pedidoParaAPI: OrderUpdateRequest = this.editPedidoForm.value as OrderUpdateRequest;
+
+      console.log('Enviando cambios del pedido a la API (PUT):', pedidoParaAPI);
 
       // En una aplicación real, aquí se haría una llamada al ApiService:
       // try {
-      //   await this.apiService.updatePedido(this.pedidoId, pedidoActualizado);
+      //   // Asegúrate de que tu apiService.updatePedido(id, payload) acepte el tipo OrderUpdateRequest
+      //   await this.apiService.updatePedido(this.pedidoId, pedidoParaAPI);
       //   alert('Pedido actualizado con éxito!');
-      //   this.router.navigate(['/home']); // O a una página de detalle de pedidos
+      //   this.router.navigate(['/home']);
       // } catch (error) {
       //   console.error('Error al actualizar el pedido:', error);
       //   this.errorMessage = 'Error al actualizar el pedido. Intente de nuevo.';
@@ -125,7 +181,7 @@ export class EditarPedidoComponent implements OnInit {
       this.router.navigate(['/home']); // Navegar a Home o donde corresponda
     } else {
       this.errorMessage = 'Por favor, completa todos los campos correctamente.';
-      this.editPedidoForm.markAllAsTouched();
+      this.editPedidoForm.markAllAsTouched(); // Marcar todos los controles como 'touched' para mostrar errores
     }
   }
 
@@ -134,7 +190,17 @@ export class EditarPedidoComponent implements OnInit {
     this.router.navigate(['/home']); // Volver a la página de inicio o a la lista de pedidos
   }
 
+  // Getter para acceder fácilmente a los controles del formulario en el HTML
   get formControls() {
     return this.editPedidoForm.controls;
+  }
+
+  // Getters para los controles anidados de 'location'
+  get locationControls() {
+    return (this.editPedidoForm.get('location') as FormGroup).controls;
+  }
+
+  get nestedLocationControls() {
+    return ((this.editPedidoForm.get('location') as FormGroup).get('location') as FormGroup).controls;
   }
 }
