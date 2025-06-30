@@ -1,46 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
-// Interfaz para la estructura del payload de la API para la actualización (PUT)
-interface OrderUpdateRequest {
-  status: string;
-  location: {
-    street: string;
-    number: string;
-    cityId: number;
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
+import { OrderService } from '../../services/order.service';
+import { MeResponse } from '../../interfaces/user.interface'; 
+import { AuthService } from '../../services/auth.service';
+import { Order, OrderLocation, OrderUpdateRequest } from '../../interfaces/order.interface';
 
-// Interfaz extendida para la representación completa del pedido en el frontend (podría venir de un GET /order/:id)
-// He mantenido los campos originales que tenías, asumiendo que un GET de la API podría devolver más datos.
-// Pero para el PUT, solo se enviarán 'status' y 'location'.
-interface PedidoFrontend {
-  id: string;
-  userId: string;
-  userName: string;
-  deliveryOption: string; // Mantenido para simular la carga completa si fuera necesario
-  product: string; // Mantenido para simular la carga completa si fuera necesario
-  restaurant: string; // Mantenido para simular la carga completa si fuera necesario
-  direccion: string; // Mantenido para simular la carga completa si fuera necesario (aunque se mapeará a street/number)
-  localidad: string; // Mantenido para simular la carga completa si fuera necesario (aunque se mapeará a cityId)
-  status: string; // Renombrado de 'estado' a 'status'
-  location: { // Nuevo campo 'location'
-    street: string;
-    number: string;
-    cityId: number;
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
-
+// Componente para editar un pedido existente
 @Component({
   selector: 'app-editar-pedido',
   standalone: true,
@@ -48,154 +17,164 @@ interface PedidoFrontend {
   templateUrl: './editar_pedido.component.html',
   styleUrls: ['./editar_pedido.component.css']
 })
-export class EditarPedidoComponent implements OnInit {
-  pedidoId: string | null = null;
-  editPedidoForm!: FormGroup;
-  errorMessage: string = '';
+export class EditarPedidoComponent implements OnInit, OnDestroy {
+  pedidoId: number | null = null; // Almacena el ID del pedido que se está editando
+  editPedidoForm!: FormGroup;     // Formulario reactivo para la edición del pedido
+  errorMessage: string = '';      // Mensaje de error para mostrar al usuario
+  isLoading: boolean = false;     // Indicador de estado de carga
 
-  // Opciones para el estado (status)
+  // Lista de estados posibles para un pedido, usada para el select en el formulario
   estados: string[] = ['pending', 'in_progress', 'delivered', 'cancelled'];
 
-  // Datos de usuario simulados (podrían venir del AuthService)
-  usuarioId: string = '03';
-  userName: string = 'Pedro';
+  // Propiedades para mostrar info del usuario logeado
+  currentUserId: string = 'N/A'; // 'N/A' porque tu backend /me no devuelve el ID por defecto CAMBIAR!!!
+  currentUserEmail: string | null = null;
+  currentUserRole: string | null = null;
+
+   // Objeto Subscription para manejar todas las suscripciones y desuscribirse en ngOnDestroy
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute, // Para obtener el ID de la URL
-    private router: Router
-    // private apiService: ApiService // Si tuvieras un servicio real para obtener/actualizar pedidos
+    private route: ActivatedRoute,
+    private router: Router,
+    private orderService: OrderService,
+    private authService: AuthService
   ) {}
 
-  ngOnInit(): void {
-    // Inicializar el formulario reactivo con la nueva estructura
+  // Método de ciclo de vida que se ejecuta al inicializar el componente
+  // Aquí se carga la información del usuario y se inicializa el formulario reactivo
+  // También se carga el pedido a editar si se proporciona un ID válido en la ruta
+  async ngOnInit(): Promise<void> {
+    this.loadCurrentUserInfo(); // Cargar la información del usuario (email, id[que no lo da en realidad xd])
+
+    // Inicialización de `editPedidoForm` con `FormGroup` y `FormControl` anidados
+    // y sus respectivas validaciones.
     this.editPedidoForm = new FormGroup({
-      status: new FormControl('', Validators.required), // Campo para el estado
-      location: new FormGroup({ // Grupo para los datos de ubicación
+      status: new FormControl('', Validators.required),
+      location: new FormGroup({
         street: new FormControl('', Validators.required),
         number: new FormControl('', Validators.required),
-        cityId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]), // cityId como número
-        location: new FormGroup({ // Grupo anidado para latitud y longitud
-          lat: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)]), // latitud como número
-          lng: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)]) // longitud como número
+        cityId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]),
+        location: new FormGroup({ 
+          lat: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)]),
+          lng: new FormControl(null, [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)])
         })
       })
     });
 
-    // Obtener el ID del pedido de la URL
-    this.pedidoId = this.route.snapshot.paramMap.get('id');
+    // Intenta obtener el ID del pedido de los parámetros de la URL
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.pedidoId = parseInt(idParam, 10); // Parsear el ID a número
+      // Valida si el ID es un número válido
+      if (isNaN(this.pedidoId)) {
+        this.errorMessage = 'ID de pedido inválido.';
+        console.error(this.errorMessage);
+        this.router.navigate(['/lista-pedidos']); // Redirige si el ID es inválido
+        return;
+      }
+      this.cargarPedido(this.pedidoId); // Carga los datos del pedido si el ID es válido
 
-    if (this.pedidoId) {
-      this.cargarPedido(this.pedidoId); // Cargar los datos del pedido si hay un ID
     } else {
+      // Si no se proporciona un ID en la URL
       this.errorMessage = 'No se proporcionó un ID de pedido para editar.';
       console.error(this.errorMessage);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/lista-pedidos']); // Redirige si falta el ID
     }
   }
 
-  // Simulación de carga de datos del pedido
-  private cargarPedido(id: string): void {
-    console.log(`Cargando pedido con ID: ${id}`);
-    // En una aplicación real, aquí se haría una llamada al ApiService:
-    // this.apiService.getPedidoById(id).subscribe(
-    //   (pedido: PedidoFrontend) => {
-    //     // Mapear los datos de la API a la estructura del formulario si es necesario
-    //     // Por ejemplo, si 'direccion' en tu API original era 'street' y 'number'
-    //     this.editPedidoForm.patchValue({
-    //       status: pedido.status,
-    //       location: {
-    //         street: pedido.location.street,
-    //         number: pedido.location.number,
-    //         cityId: pedido.location.cityId,
-    //         location: {
-    //           lat: pedido.location.location.lat,
-    //           lng: pedido.location.location.lng
-    //         }
-    //       }
-    //     });
-    //   },
-    //   (error) => {
-    //     console.error('Error al cargar el pedido:', error);
-    //     this.errorMessage = 'No se pudo cargar el pedido. Intente de nuevo más tarde.';
-    //   }
-    // );
+  // Método del ciclo de vida de Angular que se ejecuta justo antes de que el componente sea destruido
+  // Se utiliza para desuscribirse de todas las suscripciones de Observables y evitar fugas de memoria.
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe(); // Desuscribe todas las suscripciones agregadas a este objeto
+  }
 
-    // Para la simulación:
-    const mockPedido: PedidoFrontend = {
-      id: id,
-      userId: this.usuarioId,
-      userName: this.userName,
-      deliveryOption: 'A domicilio', // Campo original mantenido para simulación completa
-      product: 'Hamburguesa', // Campo original mantenido para simulación completa
-      restaurant: 'Restaurante B', // Campo original mantenido para simulación completa
-      direccion: 'Marcos Juarez 941', // Campo original mantenido para simulación completa
-      localidad: 'Villa María', // Campo original mantenido para simulación completa
-      status: 'in_progress', // Estado inicial simulado según la nueva interfaz
-      location: {
-        street: 'Av. Nueva',
-        number: '843',
-        cityId: 2,
-        location: {
-          lat: -32.0,
-          lng: -63.1
-        }
-      }
-    };
-    // PatchValue directamente con la estructura del formulario
-    this.editPedidoForm.patchValue({
-      status: mockPedido.status,
-      location: {
-        street: mockPedido.location.street,
-        number: mockPedido.location.number,
-        cityId: mockPedido.location.cityId,
-        location: {
-          lat: mockPedido.location.location.lat,
-          lng: mockPedido.location.location.lng
-        }
+  // Método para cargar la información del usuario logeado
+  loadCurrentUserInfo(): void {
+    const userInfoSubscription = this.authService.getMe().subscribe({
+      next: (userInfo: MeResponse) => {
+        this.currentUserEmail = userInfo.email;
+      },
+      error: (error: any) => {
+        this.errorMessage = error.message || 'No se pudo cargar la información del usuario logeado.';
       }
     });
-    console.log('Pedido simulado cargado:', mockPedido);
+    this.subscriptions.add(userInfoSubscription); // Añade la suscripción para que sea manejada en ngOnDestroy
   }
 
-  async guardarCambios() {
+  cargarPedido(id: number): void {
+    this.isLoading = true; // Activa el indicador de carga
+    this.errorMessage = ''; // Limpia cualquier mensaje de error previo
+    const orderSubscription = this.orderService.getOrderById(id).subscribe({
+    // Rellena el formulario con los datos del pedido cargado usando `patchValue`
+      next: (pedido: Order) => {
+        this.editPedidoForm.patchValue({
+          status: pedido.status,
+          location: {
+            street: pedido.location.street,
+            number: pedido.location.number,
+            cityId: pedido.location.cityId,
+            location: {
+              lat: pedido.location.location.lat,
+              lng: pedido.location.location.lng
+            }
+          }
+        });
+
+        this.isLoading = false; // Desactiva el indicador de carga
+      },
+      error: (error: any) => {
+        console.error('Error al cargar el pedido para edición:', error);
+        this.errorMessage = error.message || 'No se pudo cargar el pedido. Intente de nuevo más tarde.';
+        this.isLoading = false;
+        this.router.navigate(['/lista-pedidos']); // Redirigir si no se puede cargar el pedido
+      }
+    });
+    this.subscriptions.add(orderSubscription); // Añade la suscripción para gestión en ngOnDestroy
+  }
+
+  // Método para guardar los cambios del pedido editado
+  guardarCambios(): void {
     this.errorMessage = '';
-    if (this.editPedidoForm.valid && this.pedidoId) {
-      // El payload para la API debe coincidir exactamente con OrderUpdateRequest
+    this.editPedidoForm.markAllAsTouched(); // Marcar todos los controles como 'touched' para mostrar los errores
+
+    // Verifica si el formulario es válido y si se tiene un ID de pedido
+    if (this.editPedidoForm.valid && this.pedidoId !== null) {
+      this.isLoading = true;
+      // Convierte los datos del formulario a la interfaz OrderUpdateRequest esperada por la API
+      // Angular Reactive Forms se encarga de que la estructura coincida
       const pedidoParaAPI: OrderUpdateRequest = this.editPedidoForm.value as OrderUpdateRequest;
 
-      console.log('Enviando cambios del pedido a la API (PUT):', pedidoParaAPI);
+      const updateSubscription = this.orderService.updateOrder(this.pedidoId, pedidoParaAPI).subscribe({
+        next: (response) => {
+          alert('Pedido actualizado con éxito!'); // Alerta de éxito al usuario
+          this.isLoading = false;
+          this.router.navigate(['/lista-pedidos']); // Redirige a la lista de pedidos después de guardar
+        },
 
-      // En una aplicación real, aquí se haría una llamada al ApiService:
-      // try {
-      //   // Asegúrate de que tu apiService.updatePedido(id, payload) acepte el tipo OrderUpdateRequest
-      //   await this.apiService.updatePedido(this.pedidoId, pedidoParaAPI);
-      //   alert('Pedido actualizado con éxito!');
-      //   this.router.navigate(['/home']);
-      // } catch (error) {
-      //   console.error('Error al actualizar el pedido:', error);
-      //   this.errorMessage = 'Error al actualizar el pedido. Intente de nuevo.';
-      // }
-
-      // Para la simulación:
-      alert('Pedido actualizado con éxito (simulado)!');
-      this.router.navigate(['/home']); // Navegar a Home o donde corresponda
+        error: (error: any) => {
+          console.error('Error al actualizar el pedido:', error);
+          this.errorMessage = error.message || 'Error al actualizar el pedido. Intente de nuevo.';
+          this.isLoading = false;
+        }
+      });
+      this.subscriptions.add(updateSubscription);
     } else {
+      // Si el formulario no es válido, muestra un mensaje de error general
       this.errorMessage = 'Por favor, completa todos los campos correctamente.';
-      this.editPedidoForm.markAllAsTouched(); // Marcar todos los controles como 'touched' para mostrar errores
     }
   }
 
-  cancelar() {
-    console.log('Edición de pedido cancelada.');
-    this.router.navigate(['/home']); // Volver a la página de inicio o a la lista de pedidos
+  // Método para cancelar la edición del pedido y redirigir a la lista de pedidos
+  cancelar(): void {
+    this.router.navigate(['/lista-pedidos']); // Volver a la lista de pedidos
   }
 
-  // Getter para acceder fácilmente a los controles del formulario en el HTML
+  // Getters para acceder a los controles del formulario de manera más fácil
   get formControls() {
     return this.editPedidoForm.controls;
   }
 
-  // Getters para los controles anidados de 'location'
   get locationControls() {
     return (this.editPedidoForm.get('location') as FormGroup).controls;
   }

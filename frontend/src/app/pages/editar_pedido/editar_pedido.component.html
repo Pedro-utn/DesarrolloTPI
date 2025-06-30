@@ -3,84 +3,94 @@
 </div>
 
 <div class="form-container">
-  <div class="user-info">
-    <p>Usuario: {{ userName }}</p>
-    <p>ID: {{ usuarioId }}</p>
+  <div class="user-info-display">
+    <p>Usuario ID: <strong>{{ currentUserId }}</strong></p>
+    <p>Email: <strong>{{ currentUserEmail || 'Cargando...' }}</strong></p>
+    <p *ngIf="currentUserRole">Rol: <strong>{{ currentUserRole }}</strong></p>
   </div>
 
-  <form [formGroup]="editPedidoForm" (ngSubmit)="guardarCambios()">
-
-    <!-- Campo de Estado (Status) -->
-    <div class="form-group">
-      <label for="status">Estado</label>
-      <select id="status" formControlName="status" class="form-control">
-        <option value="" disabled>Selecciona un estado</option>
-        @for (est of estados; track est) {
-          <option [value]="est">{{ est }}</option>
-        }
-      </select>
-      <div *ngIf="formControls['status'].invalid && (formControls['status'].dirty || formControls['status'].touched)" class="text-danger">
-        <div *ngIf="formControls['status'].errors?.['required']">El estado es requerido.</div>
-      </div>
+  @if (isLoading) {
+    <div class="loading-message">
+      <p>Cargando pedido, por favor espera...</p>
     </div>
+  }
 
-    <!-- Sección de Ubicación (Location) -->
-    <div formGroupName="location">
-      <h3>Información de Ubicación</h3>
+  @if (errorMessage) {
+    <div class="error-message alert alert-danger" role="alert">
+      <p>Error: {{ errorMessage }}</p>
+      </div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <form [formGroup]="editPedidoForm" (ngSubmit)="guardarCambios()">
 
       <div class="form-group">
-        <label for="street">Calle</label>
-        <input type="text" id="street" formControlName="street" class="form-control" placeholder="Ej: Av. Nueva">
-        <div *ngIf="locationControls['street'].invalid && (locationControls['street'].dirty || locationControls['street'].touched)" class="text-danger">
-          <div *ngIf="locationControls['street'].errors?.['required']">La calle es requerida.</div>
+        <label for="status">Estado</label>
+        <select id="status" formControlName="status" class="form-control">
+          <option value="" disabled>Selecciona un estado</option>
+          @for (est of estados; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
+        <div *ngIf="formControls['status'].invalid && (formControls['status'].dirty || formControls['status'].touched)" class="text-danger">
+          <div *ngIf="formControls['status'].errors?.['required']">El estado es requerido.</div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="number">Número</label>
-        <input type="text" id="number" formControlName="number" class="form-control" placeholder="Ej: 843">
-        <div *ngIf="locationControls['number'].invalid && (locationControls['number'].dirty || locationControls['number'].touched)" class="text-danger">
-          <div *ngIf="locationControls['number'].errors?.['required']">El número es requerido.</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="cityId">ID de Ciudad</label>
-        <input type="number" id="cityId" formControlName="cityId" class="form-control" placeholder="Ej: 2">
-        <div *ngIf="locationControls['cityId'].invalid && (locationControls['cityId'].dirty || locationControls['cityId'].touched)" class="text-danger">
-          <div *ngIf="locationControls['cityId'].errors?.['required']">El ID de ciudad es requerido.</div>
-          <div *ngIf="locationControls['cityId'].errors?.['pattern']">El ID de ciudad debe ser un número.</div>
-        </div>
-      </div>
-
-      <!-- Sección de Latitud y Longitud (nested location) -->
       <div formGroupName="location">
-        <h4>Coordenadas Geográficas</h4>
+        <h3>Información de Ubicación</h3>
+
         <div class="form-group">
-          <label for="lat">Latitud</label>
-          <input type="number" id="lat" formControlName="lat" class="form-control" placeholder="Ej: -32.0">
-          <div *ngIf="nestedLocationControls['lat'].invalid && (nestedLocationControls['lat'].dirty || nestedLocationControls['lat'].touched)" class="text-danger">
-            <div *ngIf="nestedLocationControls['lat'].errors?.['required']">La latitud es requerida.</div>
-            <div *ngIf="nestedLocationControls['lat'].errors?.['pattern']">La latitud debe ser un número.</div>
+          <label for="street">Calle</label>
+          <input type="text" id="street" formControlName="street" class="form-control" placeholder="Ej: Av. Nueva">
+          <div *ngIf="locationControls['street'].invalid && (locationControls['street'].dirty || locationControls['street'].touched)" class="text-danger">
+            <div *ngIf="locationControls['street'].errors?.['required']">La calle es requerida.</div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="lng">Longitud</label>
-          <input type="number" id="lng" formControlName="lng" class="form-control" placeholder="Ej: -63.1">
-          <div *ngIf="nestedLocationControls['lng'].invalid && (nestedLocationControls['lng'].dirty || nestedLocationControls['lng'].touched)" class="text-danger">
-            <div *ngIf="nestedLocationControls['lng'].errors?.['required']">La longitud es requerida.</div>
-            <div *ngIf="nestedLocationControls['lng'].errors?.['pattern']">La longitud debe ser un número.</div>
+          <label for="number">Número</label>
+          <input type="text" id="number" formControlName="number" class="form-control" placeholder="Ej: 843">
+          <div *ngIf="locationControls['number'].invalid && (locationControls['number'].dirty || locationControls['number'].touched)" class="text-danger">
+            <div *ngIf="locationControls['number'].errors?.['required']">El número es requerido.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cityId">ID de Ciudad</label>
+          <input type="number" id="cityId" formControlName="cityId" class="form-control" placeholder="Ej: 2">
+          <div *ngIf="locationControls['cityId'].invalid && (locationControls['cityId'].dirty || locationControls['cityId'].touched)" class="text-danger">
+            <div *ngIf="locationControls['cityId'].errors?.['required']">El ID de ciudad es requerido.</div>
+            <div *ngIf="locationControls['cityId'].errors?.['pattern']">El ID de ciudad debe ser un número.</div>
+          </div>
+        </div>
+
+        <div formGroupName="location">
+          <h4>Coordenadas Geográficas</h4>
+          <div class="form-group">
+            <label for="lat">Latitud</label>
+            <input type="number" step="any" id="lat" formControlName="lat" class="form-control" placeholder="Ej: -32.0">
+            <div *ngIf="nestedLocationControls['lat'].invalid && (nestedLocationControls['lat'].dirty || nestedLocationControls['lat'].touched)" class="text-danger">
+              <div *ngIf="nestedLocationControls['lat'].errors?.['required']">La latitud es requerida.</div>
+              <div *ngIf="nestedLocationControls['lat'].errors?.['pattern']">La latitud debe ser un número.</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lng">Longitud</label>
+            <input type="number" step="any" id="lng" formControlName="lng" class="form-control" placeholder="Ej: -63.1">
+            <div *ngIf="nestedLocationControls['lng'].invalid && (nestedLocationControls['lng'].dirty || nestedLocationControls['lng'].touched)" class="text-danger">
+              <div *ngIf="nestedLocationControls['lng'].errors?.['required']">La longitud es requerida.</div>
+              <div *ngIf="nestedLocationControls['lng'].errors?.['pattern']">La longitud debe ser un número.</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
-
-    <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
-      <button type="submit" class="btn btn-primary" [disabled]="editPedidoForm.invalid">Guardar Cambios</button>
-    </div>
-  </form>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editPedidoForm.invalid || isLoading">Guardar Cambios</button>
+      </div>
+    </form>
+  }
 </div>

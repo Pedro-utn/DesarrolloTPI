@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-//import { AuthService } from '../../auth.service'; // NO INYECTAMOS AUTHSERVICE POR AHORA PARA SIMULAR
 
+// Componente de la página de inicio
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -11,20 +11,15 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
+  constructor(private router: Router) { }
 
-  constructor(private router: Router) { } // Solo inyectamos Router
-
+  // Método para navegar a la página de pedidos
   goToNuevoPedido() {
-    this.router.navigate(['/nuevo-pedido']);
+    this.router.navigate(['/nuevo-pedido']); // Navega programáticamente a la ruta '/nuevo-pedido'
   }
 
-  goToEditPedido(id: string) {
-    this.router.navigate(['/editar-pedido', id]);
-  }
-
+  // esto en realidad simula un cierre de sesión
   logout() {
-    // SIMULACIÓN DE LOGOUT: Directamente navega a login
-    console.log('HomeComponent: Simulación de logout, navegando a /login');
     this.router.navigate(['/login']);
   }
 }

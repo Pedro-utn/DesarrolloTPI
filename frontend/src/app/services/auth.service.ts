@@ -1,75 +1,74 @@
-// src/app/services/auth.service.ts
-
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { MeResponse } from '../interfaces/user.interface'; 
 
+// Lógica para iniciar sesión y registrar usuarios
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  // BehaviorSubject para emitir el estado de autenticación (true si logueado, false si no)
   private _isLoggedIn = new BehaviorSubject<boolean>(false);
+  // Observable para que los componentes puedan suscribirse al estado de autenticación
   public isLoggedIn$: Observable<boolean> = this._isLoggedIn.asObservable();
 
-  // URL base de tu microservicio NestJS (asegúrate de que sea la correcta)
-  // Si tu microservicio corre en localhost:3000, sería algo así:
-  private apiUrl = 'http://localhost:3001'; // Ajusta esto a la URL real de tu backend
+// URL de la API del backend
+  private apiUrl = 'http://localhost:3001';
 
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(
+    private router: Router, // Servicio de Router de Angular para navegación
+    private http: HttpClient // Cliente HTTP de Angular para hacer peticiones al backend
+  ){ 
+    // Al inicializar el servicio, comprueba si existe un token de acceso en el localStorage
+    // para determinar el estado inicial de autenticación
     const token = localStorage.getItem('accessToken');
     if (token) {
-      this._isLoggedIn.next(true);
+      this._isLoggedIn.next(true); // Si hay token, el usuario se considera logueado
     }
   }
 
-  async login(username: string, password: string): Promise<boolean> {
-    console.log('AuthService: Intentando login para:', username);
-
-    const loginData = { email: username, password: password }; // Tu backend espera 'email'
+  // Método para iniciar sesión
+  // Almacena los tokens JWT recibidos en el localStorage si el mismo es exitoso
+  async login(email: string, password: string): Promise<boolean> {
+    const loginData = { email: email, password: password }; 
 
     return new Promise((resolve) => {
       this.http.post<any>(`${this.apiUrl}/login`, loginData)
         .pipe(
           tap(response => {
-            // Si el backend devuelve accessToken y refreshToken
+            // Si la respuesta contiene los tokens, los guarda y actualiza el estado de autenticación
             if (response && response.accessToken && response.refreshToken) {
               localStorage.setItem('accessToken', response.accessToken);
-              localStorage.setItem('refreshToken', response.refreshToken); // Guardar refresh token también
+              localStorage.setItem('refreshToken', response.refreshToken);
               this._isLoggedIn.next(true);
-              console.log('AuthService: Login exitoso. Tokens guardados.');
               resolve(true);
+
             } else {
-              // Esto ocurriría si el backend devuelve un 200 OK pero sin los tokens esperados
-              console.warn('AuthService: Login exitoso, pero no se recibieron tokens esperados.');
+              // Si no se reciben los tokens esperados, pero la llamada fue exitosa (código 200)
               this._isLoggedIn.next(false);
               resolve(false);
             }
           }),
+
+          // Captura y maneja cualquier error HTTP durante la petición de login
           catchError((error: HttpErrorResponse) => {
             console.error('AuthService: Error en el login:', error);
-            this._isLoggedIn.next(false);
-            // Puedes manejar diferentes códigos de error HTTP aquí
-            if (error.status === 401) { // Unauthorized (credenciales incorrectas)
-              console.log('AuthService: Credenciales incorrectas.');
-              // Podrías lanzar un error específico o simplemente resolver a false
-            } else if (error.status >= 500) { // Errores del servidor
-              console.log('AuthService: Error del servidor.');
-            } else { // Otros errores
-              console.log('AuthService: Error desconocido en el login.');
-            }
-            resolve(false); // Siempre resuelve la promesa a false en caso de error
-            return throwError(() => new Error('Login fallido')); // Propaga el error para que el componente pueda manejarlo si lo desea
+            this._isLoggedIn.next(false); // Marca como no logueado en caso de error
+            resolve(false); // Resuelve la promesa con false en caso de error
+            // Propaga el error para que pueda ser manejado por el componente si es necesario
+            return throwError(() => new Error('Login fallido'));
           })
         )
-        .subscribe(); // Necesario para que el Observable se ejecute
+        .subscribe(); // Se suscribe al Observable para que la petición se ejecute
     });
   }
 
+  // Método para registrar un nuevo usuario
   async register(email: string, password: string): Promise<boolean> {
-    console.log('AuthService: Intentando registro para:', email);
     const registerData = { email: email, password: password };
 
     return new Promise((resolve) => {
@@ -77,55 +76,86 @@ export class AuthService {
         .pipe(
           tap(response => {
             console.log('AuthService: Registro exitoso.', response);
-            // Aquí no necesariamente inicias sesión, solo confirmas el registro
             resolve(true);
           }),
+          // Captura y maneja cualquier error HTTP durante la petición de registro
           catchError((error: HttpErrorResponse) => {
             console.error('AuthService: Error en el registro:', error);
-            resolve(false);
+            resolve(false); // Resuelve la promesa con false en caso de error
+            // Propaga el error para que pueda ser manejado por el componente si es necesario
             return throwError(() => new Error('Registro fallido'));
           })
         )
-        .subscribe();
+        .subscribe(); // Se suscribe al Observable para que la petición se ejecute
     });
   }
 
-  logout(): void {
-    console.log('AuthService: Cerrando sesión');
-    localStorage.removeItem('accessToken'); // Eliminar accessToken
-    localStorage.removeItem('refreshToken'); // Eliminar refreshToken
-    this._isLoggedIn.next(false);
-    this.router.navigate(['/login']);
+  // Método para obtener la información del usuario logueado
+  getMe(): Observable<MeResponse> {
+    const headers = this.getAuthHeaders(); // Obtiene los headers de autorización
+    // Si no hay token, lanza un error inmediatamente
+    if (!headers) {
+      return throwError(() => new Error('No autorizado: Token de autenticación no disponible.'));
+    }
+    
+    // Realiza la petición GET al endpoint '/me' con los headers de autenticación
+    return this.http.get<MeResponse>(`${this.apiUrl}/me`, { headers }).pipe(
+      catchError(this.handleError) // Captura y maneja cualquier error HTTP
+    );
   }
 
-  /**
-   * Obtiene el token de acceso (accessToken) almacenado en el localStorage.
-   * @returns El token de acceso como string, o null si no se encuentra.
-   */
+  // Método para cerrar sesión
+  // Elimina los tokens del localStorage y actualiza el estado de autenticación
+  logout(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    this._isLoggedIn.next(false); // Marca como no logueado
+    this.router.navigate(['/login']); // Redirige a la página de login
+  }
+
+  // Obtiene el token de acceso del localStorage
   getAccessToken(): string | null {
     return localStorage.getItem('accessToken');
   }
 
-  /**
-   * Retorna un objeto HttpHeaders con el token de autenticación para solicitudes a la API.
-   * Incluye el 'Content-Type' como 'application/json' y el 'Authorization' como 'Bearer Token'.
-   * @returns HttpHeaders | null - Los headers configurados, o null si no hay un token de acceso disponible.
-   */
+  // Construye los headers de autorización para las peticiones HTTP
   getAuthHeaders(): HttpHeaders | null {
-    const token = this.getAccessToken(); // Llama al método para obtener el token
+    const token = this.getAccessToken();
     if (token) {
       return new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Adjunta el token con el prefijo 'Bearer'
+        'Content-Type': 'application/json', // Tipo de contenido común para APIs REST
+        'Authorization': `Bearer ${token}` // Formato estándar para tokens Bearer
       });
     }
     return null; // Si no hay token, retorna null
   }
 
+  // Método para verificar si el usuario está autenticado
+  // Comprueba si hay un token de acceso en el localStorage
   isAuthenticated(): boolean {
     const accessToken = localStorage.getItem('accessToken');
-    // En una app real, también deberías decodificar el token para verificar su expiración
-    // o hacer una llamada al backend para validar el token si es necesario
-    return !!accessToken; // Devuelve true si el token existe, false si no
+    return !!accessToken; // Convierte la presencia del token a un booleano
+  }
+
+  // Maneja errores HTTP de manera centralizada
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Un error desconocido ocurrió.'; // Mensaje de error por defecto
+    if (error.error instanceof ErrorEvent) {
+      // Error del lado del cliente o un error de red
+      errorMessage = `Error del cliente o de red: ${error.error.message}`;
+    } else {
+      // Error del lado del servidor
+      if (error.status === 401 || error.status === 403) {
+        errorMessage = 'Acceso denegado: No tienes permiso o tu sesión ha expirado.';
+      } else if (error.error && error.error.message) {
+        // Si el backend envía un mensaje de error específico en el cuerpo de la respuesta
+        errorMessage = `Error del servidor: ${error.error.message}`;
+      } else {
+        // Mensaje de error genérico si no hay un mensaje específico del backend
+        errorMessage = `Error del servidor: ${error.status} ${error.statusText || ''}`;
+      }
+    }
+    // Retorna un observable con un nuevo objeto Error que contiene el mensaje final
+    return throwError(() => new Error(errorMessage));
   }
 }
