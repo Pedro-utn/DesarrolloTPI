@@ -1,17 +1,10 @@
+// src/app/pages/lista_pedidos/lista_pedidos.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router'; // Importar RouterModule y Router
-
-// Interfaz para la estructura de un pedido (similar a la de editar-pedido)
-interface Pedido {
-  id: string;
-  estado: string;
-  delivery: string | null;
-  productos: string;
-  restaurante: string;
-  direccion: string;
-  // Puedes añadir más propiedades si las necesitas en la tabla
-}
+import { Router, RouterModule } from '@angular/router';
+import { Order, PaginationQueryParams } from '../../interfaces/order.interface';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -21,61 +14,71 @@ interface Pedido {
   styleUrls: ['./lista_pedidos.component.css']
 })
 export class ListaPedidosComponent implements OnInit {
-  pedidos: Pedido[] = []; // Array para almacenar los pedidos
-  pedidosPaginados: Pedido[] = []; // Pedidos mostrados en la página actual
+  pedidos: Order[] = []; // Array para almacenar los pedidos
   paginaActual: number = 1;
-  pedidosPorPagina: number = 5; // Cantidad de pedidos a mostrar por página
-  totalPaginas: number = 0;
-  pedidoSeleccionado: Pedido | null = null; // Para manejar la selección de una fila
+  pedidosPorPagina: number = 10;
+  pedidoSeleccionado: Order | null = null; // Para manejar la selección de una fila
+  isLoading: boolean = false; //Para mostrar un mensaje de carga
+  errorMessage: string = ''; //Para mostrar errores de la API
+  hayMasPaginas: boolean = true; //Para controlar el boton "Siguiente"
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private orderService: OrderService
+  ) { }
 
   ngOnInit(): void {
-    this.cargarPedidosSimulados(); // Cargar datos simulados al iniciar
-    this.calcularPaginacion();
-    this.actualizarPedidosPaginados();
+    this.cargarPedidos(); // Carga los pedidos de la API al iniciarse
   }
 
-  // Simulación de carga de pedidos
-  cargarPedidosSimulados(): void {
-    this.pedidos = [
-      { id: '654', estado: 'Pendiente', delivery: '0023', productos: 'Pizza Especial, Hamburguesa Doble', restaurante: 'Kabra', direccion: 'Catamarca 1891' },
-      { id: '655', estado: 'Entregado', delivery: null, productos: 'Empanadas JyQ x12', restaurante: 'Stop', direccion: 'Mendoza 1020' },
-      { id: '656', estado: 'Pendiente', delivery: null, productos: 'Lomito XXXL', restaurante: 'Punto 22', direccion: 'Juan Müller 780' },
-      { id: '657', estado: 'En Progreso', delivery: '0068', productos: 'Porción Papas Grande', restaurante: 'Quinino', direccion: 'Antonio Sobral 867' },
-      { id: '658', estado: 'En Progreso', delivery: '6548', productos: 'Pizza Común, Empanadas Árabes x6', restaurante: 'Mansilla', direccion: 'Maipú 123' },
-      { id: '659', estado: 'En Progreso', delivery: '6548', productos: 'Hamburguesa Bacon, Porción Papas', restaurante: "Beto's", direccion: 'Corrientes 548' },
-      { id: '660', estado: 'Entregado', delivery: '6070', productos: 'Pizza 4 Quesos', restaurante: 'Junior B', direccion: 'Viamonte 1043' },
-      { id: '661', estado: 'Pendiente', delivery: null, productos: 'HamburPizza XL', restaurante: 'The One', direccion: 'Ascasubi 324' },
-      { id: '662', estado: 'Pendiente', delivery: '1111', productos: 'Chori con fritas', restaurante: 'Puesto 23', direccion: 'Chile 500' },
-      { id: '663', estado: 'Entregado', delivery: '2222', productos: 'Milanesa con puré', restaurante: 'El Fogón', direccion: 'Urquiza 750' },
-      // Agrega más datos simulados si lo necesitas
-    ];
-    // Ordenar por ID para que siempre aparezcan en el mismo orden
-    this.pedidos.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+  // Metodo para cargar pedidos desde la API
+  cargarPedidos(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.pedidoSeleccionado = null;
+
+    const params: PaginationQueryParams = {
+      page: this.paginaActual,
+      quantity: this.pedidosPorPagina
+    };
+
+    // Llama al metodo getOrders
+    this.orderService.getOrders(params).subscribe({
+      next: (responsePedidos: Order[]) => {
+        this.pedidos = responsePedidos; // Asigna los pedidos rescibidos
+        this.isLoading = false; 
+        
+        // Determina si hay mas paginas
+        this.hayMasPaginas = responsePedidos.length === this.pedidosPorPagina;
+      },
+      error: (error) => {
+        console.error('Error al cargar los pedidos:', error);
+        this.errorMessage = error.message || 'Error al cargar los pedidos desde el servidor.';
+        this.isLoading = false; // Desactiva el estado de carga en caso de error
+        this.pedidos = []; // Limpiar la tabla en caso de error
+        this.hayMasPaginas = false; // Si hubo un error, asumimos que no hay más páginas por ahora.
+      }
+    });
   }
 
   // Lógica de paginación
-  calcularPaginacion(): void {
-    this.totalPaginas = Math.ceil(this.pedidos.length / this.pedidosPorPagina);
-  }
+  cambiarPagina(delta: number): void {
+    const nuevaPagina = this.paginaActual + delta;
 
-  actualizarPedidosPaginados(): void {
-    const inicio = (this.paginaActual - 1) * this.pedidosPorPagina;
-    const fin = inicio + this.pedidosPorPagina;
-    this.pedidosPaginados = this.pedidos.slice(inicio, fin);
-    this.pedidoSeleccionado = null; // Limpiar selección al cambiar de página
-  }
-
-  cambiarPagina(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginas) {
-      this.paginaActual = pagina;
-      this.actualizarPedidosPaginados();
+    // Valida para el boton Anterior
+    if (delta < 0 && nuevaPagina >= 1) {
+      this.paginaActual = nuevaPagina;
+      this.cargarPedidos();
+    }
+    // Valida para el boton Siguiente
+    else if (delta > 0 && this.hayMasPaginas) {
+      this.paginaActual = nuevaPagina;
+      this.cargarPedidos();
     }
   }
 
   // Métodos para los botones de acción
-  seleccionarPedido(pedido: Pedido): void {
+  seleccionarPedido(pedido: Order): void {
     this.pedidoSeleccionado = pedido;
     console.log('Pedido seleccionado:', this.pedidoSeleccionado);
   }
@@ -83,8 +86,9 @@ export class ListaPedidosComponent implements OnInit {
   verPedido(): void {
     if (this.pedidoSeleccionado) {
       alert(`Ver Pedido ID: ${this.pedidoSeleccionado.id}`);
+
       // Aquí podrías navegar a una ruta de detalle:
-      // this.router.navigate(['/ver-pedido', this.pedidoSeleccionado.id]);
+    
     } else {
       alert('Por favor, selecciona un pedido para ver.');
     }
@@ -98,32 +102,35 @@ export class ListaPedidosComponent implements OnInit {
     }
   }
 
+  // --- Método para eliminar un pedido (usando el OrderService, pero no lo habilitamos todavía) ---
   eliminarPedido(): void {
     if (this.pedidoSeleccionado) {
       if (confirm(`¿Estás seguro de que quieres eliminar el pedido ID: ${this.pedidoSeleccionado.id}?`)) {
-        // Simular eliminación
-        this.pedidos = this.pedidos.filter(p => p.id !== this.pedidoSeleccionado?.id);
-        this.calcularPaginacion(); // Recalcular paginación
-        if (this.paginaActual > this.totalPaginas && this.totalPaginas > 0) {
-          this.paginaActual = this.totalPaginas; // Si la página actual excede el total, ir a la última
-        } else if (this.totalPaginas === 0) {
-          this.paginaActual = 1; // Si no hay pedidos, ir a la página 1
-        }
-        this.actualizarPedidosPaginados(); // Actualizar la vista
-        alert(`Pedido ID: ${this.pedidoSeleccionado.id} eliminado (simulado).`);
-        this.pedidoSeleccionado = null; // Limpiar selección
+        this.isLoading = true;
+        this.orderService.deleteOrder(this.pedidoSeleccionado.id).subscribe({
+          next: () => {
+            console.log(`Pedido ID: ${this.pedidoSeleccionado?.id} eliminado con éxito.`);
+            alert(`Pedido ID: ${this.pedidoSeleccionado?.id} eliminado.`);
+            this.pedidoSeleccionado = null;
+            // Después de eliminar, recarga los pedidos para actualizar la tabla.
+            // Es buena práctica intentar ir a la página actual o a la primera si la actual queda vacía.
+            // Para simplificar, recargamos la página actual.
+            this.cargarPedidos();
+          },
+          error: (error: any) => {
+            console.error('Error al eliminar el pedido:', error);
+            this.errorMessage = error.message || 'Error al eliminar el pedido.';
+            this.isLoading = false;
+          }
+        });
       }
     } else {
       alert('Por favor, selecciona un pedido para eliminar.');
     }
   }
+  // --- FIN CAMBIO (eliminarPedido) ---
 
   agregarPedido(): void {
     this.router.navigate(['/nuevo-pedido']);
-  }
-
-  // Método para obtener un array de números de página para el ngFor
-  get paginasArray(): number[] {
-    return Array(this.totalPaginas).fill(0).map((x, i) => i + 1);
   }
 }

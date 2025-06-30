@@ -4,11 +4,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http'; // Asegúrate de que esto esté aquí si no está en app.config.ts
-
-// Importa los nuevos servicios
+import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { OrderService } from '../../services/OrderService'; // <-- Importa el nuevo OrderService del frontend
+import { OrderService } from '../../services/order.service';
 
 // Custom validator for comma-separated numbers (mantenemos esto aquí, es específico del form)
 function commaSeparatedNumbersValidator(control: AbstractControl): { [key: string]: any } | null {
