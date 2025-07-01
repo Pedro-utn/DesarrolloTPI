@@ -8,7 +8,9 @@ import {
   Put, 
   Patch, 
   Delete,
-  Query
+  Query,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from './order';
@@ -28,15 +30,21 @@ export class OrderController {
   }
 
   @Get()
-  @Permissions(['findAllOrder'])
-  findAll(
-    @Query('page') page?: string,
-    @Query('quantity') quantity?: string,
-  ): Promise<Order[]> {
-    const pageNum = page ? parseInt(page, 10) : undefined;
-    const quantityNum = quantity ? parseInt(quantity, 10) : undefined;
-    return this.orderService.findAll(pageNum, quantityNum);
+  @Permissions(['findAllOrder', 'findMyOrders'], 'any') // cualquiera de los dos permisos alcanza
+  async findAll(@Req() req) {
+    const user = req.user; // contiene id, email y permissions
+
+    if (user.permissions.includes('findAllOrder')) {
+      // devuelve todas las órdenes
+      return this.orderService.findAll();
+    } else if (user.permissions.includes('findMyOrders')) {
+      // devuelve solo las órdenes del usuario
+      return this.orderService.findByUserId(user.id);
+    } else {
+      throw new UnauthorizedException('No tiene permisos para ver órdenes');
+    }
   }
+
 
   @Get(':id')
   @Permissions(['findOneOrder'])

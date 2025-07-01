@@ -59,6 +59,49 @@ export class OrderService {
   return this.formatOrderResponse(savedOrder, fullLocation);
 }
 
+  async findByUserId(userId: number, page?: number, quantity?: number): Promise<any[]> {
+  const itemsPerPage = quantity ? Math.max(1, quantity) : 10;
+  const currentPage = page ? Math.max(1, page) : 1;
+
+  const skip = (currentPage - 1) * itemsPerPage;
+
+  const rows = await this.orderRepository
+    .createQueryBuilder('order')
+    .leftJoin('location', 'location', 'order.locationId = location.id')
+    .select([
+      'order.id AS id',
+      'order.status AS status',
+      'order.delivery AS delivery',
+      'location.street AS street',
+      'location.number AS number',
+      'location.cityId AS cityId',
+      'location.lat AS lat',
+      'location.lng AS lng',
+    ])
+    .where('order.userId = :userId', { userId })
+    .offset(skip)
+    .limit(itemsPerPage)
+    .getRawMany();
+
+  return rows.map(row =>
+    this.formatOrderResponse(
+      {
+        id: row.id,
+        status: row.status,
+        delivery: row.delivery,
+      } as Order,
+      {
+        street: row.street,
+        number: row.number,
+        cityId: row.cityid,
+        lat: row.lat,
+        lng: row.lng,
+      } as Location
+    )
+  );
+  }
+
+
   async findAll(page?: number, quantity?: number): Promise<any[]> {
     const itemsPerPage = quantity ? Math.max(1, quantity) : 10;
     const currentPage = page ? Math.max(1, page) : 1;

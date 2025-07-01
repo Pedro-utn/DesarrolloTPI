@@ -60,14 +60,23 @@ export class UsersController {
   }
 
   @Post("auth/validate-permissions")
-  validatePermission(
+  async validatePermission(
     @Headers("authorization") authorization: string,
     @Body("requiredPermissions") requiredPermissions: string[],
+    @Body("mode") mode: 'any' | 'all' = 'all',
   ) {
-    return this.authService.validateTokenAndPermissions(
+    const user = await this.authService.validateTokenAndPermissions(
       authorization,
       requiredPermissions,
+      mode,
     );
+
+    // Solo devolvés id y email, sin exponer password, rol, etc.
+    return {
+      id: user.id,
+      email: user.email,
+      permissions: user.getPermissions(),
+    };
   }
 
 }

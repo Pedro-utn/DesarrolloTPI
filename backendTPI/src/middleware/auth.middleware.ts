@@ -4,13 +4,20 @@ import {
   ExecutionContext,
   UnauthorizedException,
   SetMetadata,
+  applyDecorators,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
-// Decorador @Permissions
-export const Permissions = (permissions: string[]) =>
-  SetMetadata('permissions', permissions);
+// ✅ Decorador @Permissions unificado con mode: 'any' | 'all'
+export const Permissions = (
+  permissions: string[],
+  mode: 'any' | 'all' = 'all',
+) =>
+  applyDecorators(
+    SetMetadata('permissions', permissions),
+    SetMetadata('permissionsMode', mode),
+  );
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,10 +32,16 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const permissions = this.reflector.get<string[]>(
-      'permissions',
-      context.getHandler(),
-    );
+
+    // ✅ Lectura defensiva de metadata
+    const permissions =
+      this.reflector.get<string[]>('permissions', context.getHandler()) || [];
+
+    const mode =
+      this.reflector.get<'any' | 'all'>(
+        'permissionsMode',
+        context.getHandler(),
+      ) || 'all';
 
     try {
       // 🚀 DEBUG
@@ -42,15 +55,17 @@ export class AuthGuard implements CanActivate {
 
       console.log('🔒 Enviando token al servicio JWT:', token);
       console.log('🔒 Permisos requeridos:', permissions);
+      console.log('🔒 Modo de validación:', mode.toUpperCase());
 
       const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           requiredPermissions: permissions,
+          mode,
         }),
       });
 
@@ -67,7 +82,6 @@ export class AuthGuard implements CanActivate {
 
       request['user'] = data;
       return true;
-
     } catch (error) {
       console.error('❌ Excepción inesperada en AuthGuard:', error);
       throw new UnauthorizedException('No autorizado');

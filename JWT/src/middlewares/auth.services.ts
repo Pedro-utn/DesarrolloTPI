@@ -23,17 +23,12 @@ export class AuthService {
 
   // Valida el token JWT y comprueba si el usuario asociado tiene los permisos necesarios
 
-  async validateTokenAndPermissions(
+    async validateTokenAndPermissions(
     token: string,
     requiredPermissions: string[],
+    mode: 'any' | 'all' = 'all',
   ): Promise<UserEntity> {
-
-    // Asegura que requiredPermissions sea siempre un array para evitar errores
-    // medida defensiva si el decorador @Permissions no devuelve un array
-
     requiredPermissions = Array.isArray(requiredPermissions) ? requiredPermissions : [];
-
-    // Verifica si el token está presente
 
     if (!token) {
       throw new UnauthorizedException("Token de autenticación no proporcionado.");
@@ -41,71 +36,50 @@ export class AuthService {
 
     let payload: any;
 
-    // Decodificación y verificación del JWT
-
     try {
-      // Elimina el prefijo 'Bearer' si está presente antes de verificar el token
       payload = this.jwtService.getPayload(token.replace(/^Bearer\s+/i, ''));
     } catch (error) {
-
-      // Captura y lanza una excepción si el token es inválido o ha expirado
-
       throw new UnauthorizedException("Token de autenticación inválido o expirado.");
     }
-
-    // Verificación del payload del token (debe contener el email)
 
     if (!payload || !payload.email) {
       throw new UnauthorizedException("Token de autenticación inválido: falta información de usuario.");
     }
 
-    // Búsqueda del usuario en la base de datos por email del payload
-
     const userFound = await this.userRepository.findOne({
       where: { email: payload.email },
-      relations: ['rol'], // Asegura cargar la relación con el rol del usuario
+      relations: ['rol', 'rol.permissions'], // carga el rol y sus permisos
     });
-
     if (!userFound) {
       throw new UnauthorizedException("Usuario no encontrado.");
     }
-
-    // Verificación de que el usuario tiene un rol asignado
 
     if (!userFound.rol) {
       throw new UnauthorizedException("El usuario no tiene un rol asignado o no se pudo cargar.");
     }
 
-    // Búsqueda de los permisos asociados al rol del usuario
-
     const userPermissions = await this.roleRepository.findOne({
       where: { id: userFound.rol.id },
-      relations: ["permissions"], // Carga las relaciones de permisos para el rol
+      relations: ["permissions"],
     });
 
     if (!userPermissions) {
       throw new UnauthorizedException("No se encontró el rol o permisos asociados para el usuario.");
     }
 
-    // Extracción de los nombres de los permisos del usuario
-    // Si no hay permisos asociados, se usa un array vacío para evitar errores
-
     const permissionsStrings = userPermissions.permissions
       ? userPermissions.permissions.map((p) => p.name)
       : [];
 
-    // Verificación de que el usuario tiene los permisos requeridos
+    const hasPermission =
+      mode === 'any'
+        ? requiredPermissions.some((perm) => permissionsStrings.includes(perm))
+        : requiredPermissions.every((perm) => permissionsStrings.includes(perm));
 
-    const hasAllPermissions = requiredPermissions.every((perm) =>
-      permissionsStrings.includes(perm),
-    );
-
-    if (!hasAllPermissions) {
+    if (!hasPermission) {
       throw new UnauthorizedException("No tiene permisos suficientes");
     }
 
-    // Si todas las validaciones son exitosas, retorna el usuario
-    
     return userFound;
   }
 }
