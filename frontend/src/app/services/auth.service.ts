@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { throwError } from 'rxjs';
 import { MeResponse } from '../interfaces/user.interface'; 
 
 // Lógica para iniciar sesión y registrar usuarios
@@ -16,7 +15,7 @@ export class AuthService {
   // Observable para que los componentes puedan suscribirse al estado de autenticación
   public isLoggedIn$: Observable<boolean> = this._isLoggedIn.asObservable();
 
-// URL de la API del backend
+  // URL de la API del backend
   private apiUrl = 'http://localhost:3001';
 
   constructor(
@@ -45,6 +44,18 @@ export class AuthService {
               localStorage.setItem('accessToken', response.accessToken);
               localStorage.setItem('refreshToken', response.refreshToken);
               this._isLoggedIn.next(true);
+
+              // Se hace una segunda petición al endpoint /me para guardar los datos del usuario
+              this.getMe().subscribe({
+                next: (userInfo) => {
+                  localStorage.setItem('userEmail', userInfo.email);
+                  localStorage.setItem('userId', userInfo.id.toString());
+                },
+                error: (err) => {
+                  console.error('No se pudo obtener información del usuario:', err);
+                }
+              });
+
               resolve(true);
 
             } else {
@@ -109,6 +120,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
     this._isLoggedIn.next(false); // Marca como no logueado
     this.router.navigate(['/login']); // Redirige a la página de login
   }

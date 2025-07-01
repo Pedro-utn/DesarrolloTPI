@@ -2,4 +2,5 @@
 // que proporciona información sobre el usuario actualmente autenticado.
 export interface MeResponse {
   email: string;
+  id: number;
 }

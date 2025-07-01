@@ -91,15 +91,16 @@ export class EditarPedidoComponent implements OnInit, OnDestroy {
 
   // Método para cargar la información del usuario logeado
   loadCurrentUserInfo(): void {
-    const userInfoSubscription = this.authService.getMe().subscribe({
-      next: (userInfo: MeResponse) => {
-        this.currentUserEmail = userInfo.email;
-      },
-      error: (error: any) => {
-        this.errorMessage = error.message || 'No se pudo cargar la información del usuario logeado.';
-      }
-    });
-    this.subscriptions.add(userInfoSubscription); // Añade la suscripción para que sea manejada en ngOnDestroy
+    const storedId = localStorage.getItem('userId');
+    const storedEmail = localStorage.getItem('userEmail');
+
+    if (storedId && storedEmail) {
+      this.currentUserId = storedId;
+      this.currentUserEmail = storedEmail;
+    } else {
+      this.errorMessage = 'No se encontró información del usuario en localStorage.';
+      this.authService.logout(); // Forzar logout si no hay datos
+    }
   }
 
   cargarPedido(id: number): void {

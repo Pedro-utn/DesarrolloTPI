@@ -41,35 +41,38 @@ interface NewOrderRequest {
 @Component({
   selector: 'app-nuevo-pedido',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule], // HttpClientModule debe estar importado si no se provee globalmente
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './nuevo_pedido.component.html',
   styleUrls: ['./nuevo_pedido.component.css']
 })
 export class NuevoPedidoComponent implements OnInit {
 
-  usuarioId: string = '03'; // Esto debería venir de AuthService
-  userName: string = 'Pedro'; // Esto debería venir de AuthService
+  usuarioId: string = '';  // Se obtiene desde localStorage
+  userName: string = '';   // Se obtiene desde localStorage
 
   newPedidoForm!: FormGroup;
   errorMessage: string = '';
 
   constructor(
     private router: Router,
-    private authService: AuthService, // Inyecta AuthService
-    private orderService: OrderService // <-- Inyecta el nuevo OrderService
+    private authService: AuthService,
+    private orderService: OrderService
   ) { }
 
   ngOnInit(): void {
-    // Aquí puedes intentar obtener userId y userName del AuthService
-    // Por ejemplo, si tu token contiene estos datos, podrías tener un método
-    // en AuthService para decodificarlo o devolver un objeto de usuario.
-    // Para simplificar, los mantenemos hardcodeados por ahora si no tienes esa lógica.
-    // this.usuarioId = this.authService.getUserId() || '03';
-    // this.userName = this.authService.getUserName() || 'Pedro';
+    // Obtener datos del usuario desde localStorage
+    const storedId = localStorage.getItem('userId');
+    const storedEmail = localStorage.getItem('userEmail');
+    if (storedId && storedEmail) {
+      this.usuarioId = storedId;
+      this.userName = storedEmail;
+    } else {
+      this.errorMessage = 'No se encontró información del usuario.';
+      this.authService.logout(); // Forzamos logout si no hay datos válidos
+      return;
+    }
 
     this.newPedidoForm = new FormGroup({
-      // Validators.pattern(/^\d+$/) asegura que solo sean dígitos para números enteros.
-      // Para lat/lng, el pattern permite números con decimales y signo negativo.
       restaurantId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]),
       productsInput: new FormControl('', [Validators.required, commaSeparatedNumbersValidator]),
       location: new FormGroup({
@@ -83,7 +86,7 @@ export class NuevoPedidoComponent implements OnInit {
       })
     });
   }
-
+  
   agregarPedido() {
     this.errorMessage = '';
 

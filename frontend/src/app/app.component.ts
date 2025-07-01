@@ -6,8 +6,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, CommonModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent {
   title = 'pedidos-ya';

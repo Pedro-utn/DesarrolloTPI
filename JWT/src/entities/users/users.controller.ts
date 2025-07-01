@@ -30,6 +30,7 @@ export class UsersController {
   me(@Req() req: RequestWithUser) {
     return {
       email: req.user.email,
+      id: req.user.id,
     };
   }
 
