@@ -43,8 +43,6 @@ export class OrderController {
     }
   }
 
-
-
   @Get(':id')
   @Permissions(['findOneOrder'])
 

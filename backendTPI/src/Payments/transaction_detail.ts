@@ -1,10 +1,4 @@
-// transaction_detail.ts
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToOne} from 'typeorm';
 import { Payment } from './payment';
 import { RefundDetail } from './refund_detail';
 
@@ -25,11 +19,9 @@ export class TransactionDetail {
   @Column({ type: 'timestamp', name: 'payment_time' })
   payment_time: Date;
 
-  // Relación OneToOne con Payment (inversa)
   @OneToOne(() => Payment, (payment) => payment.transactionDetail)
   payment: Payment;
 
-  // Relación OneToOne con RefundDetail
   @OneToOne(() => RefundDetail, (refundDetail) => refundDetail.transactionDetail)
   refundDetail?: RefundDetail;
 }
