@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { MeResponse } from '../interfaces/user.interface'; 
 
 // Lógica para iniciar sesión y registrar usuarios
@@ -113,6 +113,86 @@ export class AuthService {
     return this.http.get<MeResponse>(`${this.apiUrl}/me`, { headers }).pipe(
       catchError(this.handleError) // Captura y maneja cualquier error HTTP
     );
+  }
+
+  /**
+   * Valida si el usuario tiene un permiso específico
+   * @param permission Nombre del permiso a validar
+   * @returns Observable<boolean> - true si tiene el permiso, false si no
+   */
+  /**
+ * Verifica si el usuario tiene un permiso específico.
+ * @param permission El permiso a validar (ej: "findAllOrders")
+ * @returns Observable<boolean>
+ */
+  validatePermission(permission: string): Observable<boolean> {
+    const headers = this.getAuthHeaders();
+
+    if (!headers) {
+      console.warn('No hay token disponible para validar permisos');
+      return new Observable<boolean>((observer) => {
+        observer.next(false);
+        observer.complete();
+      });
+    }
+
+    const body = {
+      requiredPermissions: [permission],
+      mode: 'any'
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/auth/validate-permissions`, body, { headers }).pipe(
+      map((response) => {
+        // El backend devuelve solo los permisos que el usuario tiene de los solicitados
+        return Array.isArray(response.permissions) && response.permissions.includes(permission);
+      }),
+      catchError((error) => {
+        console.error(`❌ Error validando permiso "${permission}":`, error);
+        return new Observable<boolean>((observer) => {
+          observer.next(false);
+          observer.complete();
+        });
+      })
+    );
+  }
+
+
+  /**
+   * Método sobrecargado para usar con token específico (opcional)
+   * @param permission Nombre del permiso a validar
+   * @param accessToken Token específico a usar
+   * @returns Observable<boolean>
+   */
+  validatePermissionsWithToken(permission: string, accessToken: string): Observable<boolean> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    });
+
+    const body = {
+      permission: permission
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/jwt/auth/validate-permissions`, body, { headers }).pipe(
+      map((response) => {
+        if (typeof response === 'boolean') {
+          return response;
+        }
+        return response.hasPermission || response.valid || response.allowed || false;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error(`Error validando permiso '${permission}' con token específico:`, error);
+        return throwError(() => false);
+      })
+    );
+  }
+
+  /**
+   * Método auxiliar para obtener el token actual
+   * (usado por el componente para mayor claridad)
+   */
+  getCurrentToken(): string | null {
+    return this.getAccessToken();
   }
 
   // Método para cerrar sesión
