@@ -23,7 +23,9 @@ INSERT INTO PERMISSIONS (name) VALUES  -- id esta automatizado
 ('findOneOrder'), -- 17 
 ('putOrder'), -- 18
 ('patchOrder'), -- 19
-('deleteOrder'); --20
+('deleteOrder'), --20
+('findMyOrders'); --21
+
 
 -- 2. Crear Rol de admin y user
 INSERT INTO ROL (name) VALUES 
@@ -38,7 +40,7 @@ INSERT INTO ROL_PERMISSIONS_PERMISSION ("rolId", "permissionId") VALUES
 (1, 14), (1, 15), (1, 16), (1, 17), (1, 18), (1, 19),
 (1, 20), 
 -- Roles de Usuario
-(2,9),(2,10),(2,11),(2,13),(2,15),(2,17),(2,20); 
+(2,9),(2,10),(2,11),(2,13),(2,15),(2,17),(2,20), (2,21); 
 
 -- 4. Creamos Admin y un usuario normal
 INSERT INTO USERS (email, password, "rolId") VALUES 

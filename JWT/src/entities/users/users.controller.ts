@@ -60,14 +60,24 @@ export class UsersController {
   }
 
   @Post("auth/validate-permissions")
-  validatePermission(
+  async validatePermission(
     @Headers("authorization") authorization: string,
     @Body("requiredPermissions") requiredPermissions: string[],
+    @Body("mode") mode: 'any' | 'all' = 'all',
   ) {
-    return this.authService.validateTokenAndPermissions(
+    const user = await this.authService.validateTokenAndPermissions(
       authorization,
       requiredPermissions,
+      mode,
     );
-  }
 
+    // Solo devolvés los permisos requeridos que el usuario realmente tiene
+    const grantedPermissions = requiredPermissions.filter(p =>
+      user.getPermissions().includes(p),
+    );
+
+    return {
+      permissions: grantedPermissions,
+    };
+  }
 }

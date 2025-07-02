@@ -1,20 +1,32 @@
-<div class="background-image-wrapper"> <div class="home-content-container"> <div class="text-center mb-5">
-      <h1 class="fw-bold">ÓRDENES Y PAGOS</h1> <p class="text-muted">Gestiona tus operaciones de forma eficiente</p> <div class="d-flex justify-content-center mt-3 gap-2">
-        <button class="btn btn-primary" routerLink="/lista-pedidos">
-          Ver Lista de Pedidos
-        </button>
-        
-        <button class="btn btn-info" (click)="viewPaymentsList()">
-          Ver Lista de Pagos
-        </button>
+<div class="page-container">
+  <div class="left-panel">
+    <img src="../../../assets/pedido-online.png" alt="Imagen izquierda" />
+  </div>
+
+  <div class="main-content-panel">
+    <div class="home-content-container">
+      <div class="text-center mb-5">
+        <h1 class="fw-bold">ÓRDENES Y PAGOS</h1>
+        <p class="text-muted">Gestiona tus operaciones de forma eficiente</p>
+        <div class="d-flex justify-content-center mt-3 gap-2">
+          <button class="btn btn-primary" routerLink="/lista-pedidos">
+            Ver Lista de Pedidos
+          </button>
+          <button class="btn btn-info" (click)="viewPaymentsList()">
+            Ver Lista de Pagos
+          </button>
+          </div>
       </div>
     </div>
   </div>
+
+  <div class="right-panel">
+    <img src="../../../assets/pago-online.png" alt="Imagen derecha" />
+  </div>
 </div>
 
-
-<div class="back-button-container">
-  <button class="btn btn-secondary" (click)="volverAtras()">
-    Volver
+<div class="logout-button-container">
+  <button class="btn btn-danger" (click)="logout()">
+    Cerrar Sesión
   </button>
 </div>

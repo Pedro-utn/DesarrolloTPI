@@ -1,10 +1,9 @@
-// src/app/pages/lista_pedidos/lista_pedidos.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Order, PaginationQueryParams } from '../../interfaces/order.interface';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -14,24 +13,65 @@ import { OrderService } from '../../services/order.service';
   styleUrls: ['./lista_pedidos.component.css']
 })
 export class ListaPedidosComponent implements OnInit {
-  pedidos: Order[] = []; // Array para almacenar los pedidos
+  pedidos: Order[] = [];
   paginaActual: number = 1;
   pedidosPorPagina: number = 10;
-  pedidoSeleccionado: Order | null = null; // Para manejar la selección de una fila
-  isLoading: boolean = false; //Para mostrar un mensaje de carga
-  errorMessage: string = ''; //Para mostrar errores de la API
-  hayMasPaginas: boolean = true; //Para controlar el boton "Siguiente"
+  pedidoSeleccionado: Order | null = null;
+  isLoading: boolean = false;
+  errorMessage: string = '';
+  hayMasPaginas: boolean = true;
+
+  // Permisos
+  hasDeletePermission = false;
+  hasCreatePermission = false;
+  hasPatchPermission = false;
 
   constructor(
     private router: Router,
-    private orderService: OrderService
-  ) { }
+    private orderService: OrderService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.cargarPedidos(); // Carga los pedidos de la API al iniciarse
+    this.cargarPedidos();
+    this.verificarPermisos();
   }
 
-  // Metodo para cargar pedidos desde la API
+  verificarPermisos(): void {
+    this.authService.validatePermission('deleteOrder').subscribe({
+      next: (result) => {
+        this.hasDeletePermission = result;
+        console.log('✅ Permiso deleteOrder:', result);
+      },
+      error: (err) => {
+        console.warn('❌ Error verificando deleteOrder:', err);
+        this.hasDeletePermission = false;
+      }
+    });
+
+    this.authService.validatePermission('createOrder').subscribe({
+      next: (result) => {
+        this.hasCreatePermission = result;
+        console.log('✅ Permiso createOrder:', result);
+      },
+      error: (err) => {
+        console.warn('❌ Error verificando createOrder:', err);
+        this.hasCreatePermission = false;
+      }
+    });
+
+    this.authService.validatePermission('patchOrder').subscribe({
+      next: (result) => {
+        this.hasPatchPermission = result;
+        console.log('✅ Permiso patchOrder:', result);
+      },
+      error: (err) => {
+        console.warn('❌ Error verificando patchOrder:', err);
+        this.hasPatchPermission = false;
+      }
+    });
+  }
+
   cargarPedidos(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -42,23 +82,26 @@ export class ListaPedidosComponent implements OnInit {
       quantity: this.pedidosPorPagina
     };
 
-    // Llama al metodo getOrders
     this.orderService.getOrders(params).subscribe({
       next: (responsePedidos: Order[]) => {
+
         this.pedidos = responsePedidos; // Asigna los pedidos rescibidos
         this.isLoading = false; 
-        
+
         this.ordenarPedidosPorId(); // Ordenar los pedidos por ID después de cargarlos
 
         // Determina si hay mas paginas
+        this.pedidos = responsePedidos;
+        this.isLoading = false;
         this.hayMasPaginas = responsePedidos.length === this.pedidosPorPagina;
+        console.log('📦 Pedidos cargados:', responsePedidos);
       },
       error: (error) => {
-        console.error('Error al cargar los pedidos:', error);
+        console.error('❌ Error al cargar los pedidos:', error);
         this.errorMessage = error.message || 'Error al cargar los pedidos desde el servidor.';
-        this.isLoading = false; // Desactiva el estado de carga en caso de error
-        this.pedidos = []; // Limpiar la tabla en caso de error
-        this.hayMasPaginas = false; // Si hubo un error, asumimos que no hay más páginas por ahora.
+        this.isLoading = false;
+        this.pedidos = [];
+        this.hayMasPaginas = false;
       }
     });
   }
@@ -68,34 +111,26 @@ export class ListaPedidosComponent implements OnInit {
     this.pedidos.sort((a, b) => a.id - b.id);
   }
 
-  // Lógica de paginación
   cambiarPagina(delta: number): void {
     const nuevaPagina = this.paginaActual + delta;
 
-    // Valida para el boton Anterior
     if (delta < 0 && nuevaPagina >= 1) {
       this.paginaActual = nuevaPagina;
       this.cargarPedidos();
-    }
-    // Valida para el boton Siguiente
-    else if (delta > 0 && this.hayMasPaginas) {
+    } else if (delta > 0 && this.hayMasPaginas) {
       this.paginaActual = nuevaPagina;
       this.cargarPedidos();
     }
   }
 
-  // Métodos para los botones de acción
   seleccionarPedido(pedido: Order): void {
     this.pedidoSeleccionado = pedido;
-    console.log('Pedido seleccionado:', this.pedidoSeleccionado);
+    console.log('📌 Pedido seleccionado:', this.pedidoSeleccionado);
   }
 
   verPedido(): void {
     if (this.pedidoSeleccionado) {
       alert(`Ver Pedido ID: ${this.pedidoSeleccionado.id}`);
-
-      // Aquí podrías navegar a una ruta de detalle:
-    
     } else {
       alert('Por favor, selecciona un pedido para ver.');
     }
@@ -109,23 +144,19 @@ export class ListaPedidosComponent implements OnInit {
     }
   }
 
-  // --- Método para eliminar un pedido (usando el OrderService, pero no lo habilitamos todavía) ---
   eliminarPedido(): void {
     if (this.pedidoSeleccionado) {
       if (confirm(`¿Estás seguro de que quieres eliminar el pedido ID: ${this.pedidoSeleccionado.id}?`)) {
         this.isLoading = true;
         this.orderService.deleteOrder(this.pedidoSeleccionado.id).subscribe({
           next: () => {
-            console.log(`Pedido ID: ${this.pedidoSeleccionado?.id} eliminado con éxito.`);
+            console.log(`🗑️ Pedido ID: ${this.pedidoSeleccionado?.id} eliminado.`);
             alert(`Pedido ID: ${this.pedidoSeleccionado?.id} eliminado.`);
             this.pedidoSeleccionado = null;
-            // Después de eliminar, recarga los pedidos para actualizar la tabla.
-            // Es buena práctica intentar ir a la página actual o a la primera si la actual queda vacía.
-            // Para simplificar, recargamos la página actual.
             this.cargarPedidos();
           },
           error: (error: any) => {
-            console.error('Error al eliminar el pedido:', error);
+            console.error('❌ Error al eliminar el pedido:', error);
             this.errorMessage = error.message || 'Error al eliminar el pedido.';
             this.isLoading = false;
           }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 // Componente de la página de inicio
 @Component({
@@ -10,14 +11,17 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
+
 export class HomeComponent {
-  constructor(private router: Router) { }
+  // Inyecta AuthService en el constructor
+  constructor(
+    private router: Router,
+    private authService: AuthService // Inyecta el AuthService
+  ) { }
 
-  // El método goToNuevoPedido() fue eliminado ya que el botón "Nuevo Pedido" fue removido.
-
-  // esto en realidad simula un cierre de sesión
+  // Método para cerrar sesión
   logout() {
-    this.router.navigate(['/login']);
+    this.authService.logout(); // Llama al método logout del AuthService
   }
 
   viewPaymentsList() {
