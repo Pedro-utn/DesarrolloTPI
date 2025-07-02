@@ -32,6 +32,8 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = authHeader.replace('Bearer ', '');
+    request['accessToken'] = token; // <- ✅ guardamos el token para usarlo luego
+
 
     // ✅ Lectura defensiva de metadata
     const permissions =
@@ -87,4 +89,6 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('No autorizado');
     }
   }
+
+  
 }

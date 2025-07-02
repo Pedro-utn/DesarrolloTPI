@@ -71,12 +71,13 @@ export class UsersController {
       mode,
     );
 
-    // Solo devolvés id y email, sin exponer password, rol, etc.
+    // Solo devolvés los permisos requeridos que el usuario realmente tiene
+    const grantedPermissions = requiredPermissions.filter(p =>
+      user.getPermissions().includes(p),
+    );
+
     return {
-      id: user.id,
-      email: user.email,
-      permissions: user.getPermissions(),
+      permissions: grantedPermissions,
     };
   }
-
 }

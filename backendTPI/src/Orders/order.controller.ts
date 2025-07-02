@@ -30,20 +30,19 @@ export class OrderController {
   }
 
   @Get()
-  @Permissions(['findAllOrder', 'findMyOrders'], 'any') // cualquiera de los dos permisos alcanza
+  @Permissions(['findAllOrder', 'findMyOrders'], 'any')
   async findAll(@Req() req) {
-    const user = req.user; // contiene id, email y permissions
+    const user = req.user;
 
     if (user.permissions.includes('findAllOrder')) {
-      // devuelve todas las órdenes
       return this.orderService.findAll();
     } else if (user.permissions.includes('findMyOrders')) {
-      // devuelve solo las órdenes del usuario
-      return this.orderService.findByUserId(user.id);
+      return this.orderService.findByUserId(req.accessToken);
     } else {
       throw new UnauthorizedException('No tiene permisos para ver órdenes');
     }
   }
+
 
 
   @Get(':id')
