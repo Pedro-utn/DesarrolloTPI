@@ -30,7 +30,7 @@ export class OrderController {
   }
 
   @Get()
-  @Permissions(['findAllOrder', 'findMyOrders'], 'any')
+  @Permissions(['findAllOrder', 'findMyOrders'], 'any') 
   async findAll(@Req() req) {
     const user = req.user;
 

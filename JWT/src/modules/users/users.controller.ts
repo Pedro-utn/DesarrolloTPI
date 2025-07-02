@@ -9,14 +9,14 @@ import {
   Headers,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { LoginDTO } from "../../interfaces/login.dto";
-import { RegisterDTO } from "../../interfaces/register.dto";
+import { LoginDTO } from "../interfaces/login.dto";
+import { RegisterDTO } from "../interfaces/register.dto";
 import { Request } from "express";
-import { AuthGuard } from "../../middlewares/auth.middleware";
-import { RequestWithUser } from "src/interfaces/request-user";
-import { UpdateUserRole } from "../users/users.service";
-import { Permissions } from "src/middlewares/decorators/permissions.decorator";
-import { AuthService } from "src/middlewares/auth.services";
+import { AuthGuard } from "../../auth/middlewares/auth.middleware";
+import { RequestWithUser } from "src/modules/interfaces/request-user";
+import { UpdateUserRole } from "./users.service";
+import { Permissions } from "../../auth/middlewares/decorators/permissions.decorator";
+import { AuthService } from "../../auth/middlewares/auth.services";
 
 @Controller("")
 export class UsersController {
@@ -63,7 +63,7 @@ export class UsersController {
   async validatePermission(
     @Headers("authorization") authorization: string,
     @Body("requiredPermissions") requiredPermissions: string[],
-    @Body("mode") mode: 'any' | 'all' = 'all',
+    @Body("mode") mode: 'any' | 'all' = 'all', // Se implemento la posibilidad de que en caso que se manden mas de un permiso a validar, el endpoint permita que solo se cumpla con uno de esos permisos.
   ) {
     const user = await this.authService.validateTokenAndPermissions(
       authorization,

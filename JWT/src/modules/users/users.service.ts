@@ -1,12 +1,12 @@
 import { HttpException, Injectable, NotFoundException, UnauthorizedException} from "@nestjs/common";
-import { LoginDTO } from "src/interfaces/login.dto";
-import { RegisterDTO } from "src/interfaces/register.dto";
-import { UserI } from "src/interfaces/user.interface";
-import { UserEntity } from "./user.entity";
+import { LoginDTO } from "src/modules/interfaces/login.dto";
+import { RegisterDTO } from "src/modules/interfaces/register.dto";
+import { UserI } from "src/modules/interfaces/user.interface";
+import { UserEntity } from "./entities/user.entity";
 import { hashSync, compareSync } from "bcrypt";
-import { JwtService } from "src/jwt/jwt.service";
+import { JwtService } from "src/auth/jwt/jwt.service";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "src/entities/roles/role.entity";
+import { Role } from "../roles/entities/role.entity";
 import { Repository } from "typeorm";
 import { IdOnlyRolDto } from "../roles/roles.service";
 

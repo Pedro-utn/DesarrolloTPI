@@ -7,6 +7,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { NuevoPedidoComponent } from './pages/nuevo_pedido/nuevo_pedido.component';
 import { EditarPedidoComponent } from './pages/editar_pedido/editar_pedido.component';
 import { ListaPedidosComponent } from './pages/lista_pedidos/lista_pedidos.component';
+
 import { authGuard } from './auth.guard';
 
 // Esta clase se encarga de redirigir a las rutas correspondientes

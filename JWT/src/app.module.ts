@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthGuard } from "./middlewares/auth.middleware";
-import { JwtService } from "./jwt/jwt.service";
-import { UsersService } from "./entities/users/users.service";
-import { RolesModule } from "./entities/roles/roles.module";
-import { PermissionsModule } from "./entities/permissions/permissions.module";
-import { UsersModule } from "./entities/users/users.module";
-import { AuthService } from "./middlewares/auth.services";
+import { AuthGuard } from "./auth/middlewares/auth.middleware";
+import { JwtService } from "./auth/jwt/jwt.service";
+import { UsersService } from "./modules/users/users.service";
+import { RolesModule } from "./modules/roles/roles.module";
+import { PermissionsModule } from "./modules/permission/permissions.module";
+import { UsersModule } from "./modules/users/users.module";
+import { AuthService } from "./auth/middlewares/auth.services";
 
 @Module({
   imports: [

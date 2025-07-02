@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { sign, verify, JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken"; // Importa los tipos de error específicos
 import * as dayjs from "dayjs"; // librería para manejar fechas
-import { Payload } from "src/interfaces/payload";
+import { Payload } from "src/modules/interfaces/payload";
 
 // Servicio para manejar la gestión de JSON Web Tokens (JWT)
 // Hay métodos para generar tokens, refrescarlos y obtener el payload de un token
