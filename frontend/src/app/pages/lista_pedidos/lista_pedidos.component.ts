@@ -48,6 +48,8 @@ export class ListaPedidosComponent implements OnInit {
         this.pedidos = responsePedidos; // Asigna los pedidos rescibidos
         this.isLoading = false; 
         
+        this.ordenarPedidosPorId(); // Ordenar los pedidos por ID después de cargarlos
+
         // Determina si hay mas paginas
         this.hayMasPaginas = responsePedidos.length === this.pedidosPorPagina;
       },
@@ -59,6 +61,11 @@ export class ListaPedidosComponent implements OnInit {
         this.hayMasPaginas = false; // Si hubo un error, asumimos que no hay más páginas por ahora.
       }
     });
+  }
+
+  // Método para ordenar los pedidos por ID (ascendente)
+  ordenarPedidosPorId(): void {
+    this.pedidos.sort((a, b) => a.id - b.id);
   }
 
   // Lógica de paginación
@@ -128,9 +135,14 @@ export class ListaPedidosComponent implements OnInit {
       alert('Por favor, selecciona un pedido para eliminar.');
     }
   }
-  // --- FIN CAMBIO (eliminarPedido) ---
 
   agregarPedido(): void {
     this.router.navigate(['/nuevo-pedido']);
   }
+
+// Método para navegar hacia atrás
+  volverAtras(): void {
+    this.router.navigate(['/home']);
+  }
+
 }

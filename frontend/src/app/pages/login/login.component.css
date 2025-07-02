@@ -103,24 +103,34 @@
 .btn-submit { /* Botón principal de acción */
   width: 100%;
   padding: 12px;
-  background-color: #6c757d; /* Color gris oscuro como en la imagen */
+  background-color: #ff7e5f;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 1.2em;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn-submit:hover {
-  background-color: #5a6268;
+  background-color: #e66a4f;
+  transform: translateY(-2px); /* Efecto de elevación al pasar el mouse */
+  border-color: #e66a4f;
+}
+
+.btn-submit:active {
+  transform: translateY(0); /* Añadido: Vuelve a la posición original al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Añadido: Sombra más pequeña al hacer clic */
 }
 
 .btn-submit:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+  transform: translateY(0) !important; /* Asegura que no se mueva si está deshabilitado */
+  box-shadow: none !important; /* Elimina la sombra si está deshabilitado */
 }
 
 .form-link {

@@ -13,13 +13,19 @@ import { Router, RouterModule } from '@angular/router';
 export class HomeComponent {
   constructor(private router: Router) { }
 
-  // Método para navegar a la página de pedidos
-  goToNuevoPedido() {
-    this.router.navigate(['/nuevo-pedido']); // Navega programáticamente a la ruta '/nuevo-pedido'
-  }
+  // El método goToNuevoPedido() fue eliminado ya que el botón "Nuevo Pedido" fue removido.
 
   // esto en realidad simula un cierre de sesión
   logout() {
+    this.router.navigate(['/login']);
+  }
+
+  viewPaymentsList() {
+    console.log('Botón "Ver Lista de Pagos" presionado. Funcionalidad pendiente.');
+  }
+
+  // Método para navegar hacia atrás
+  volverAtras(): void {
     this.router.navigate(['/login']);
   }
 }

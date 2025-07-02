@@ -1,39 +1,24 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f0f2f5;
-  min-height: 100vh;
-}
-
 .header {
-  width: 100%;
-  max-width: 800px;
-  background: linear-gradient(to right, #ff6b6b, #ffa500); /* Colores del header de la imagen */
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colores de la imagen */
   color: white;
   padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 15px;
 }
 
 .header h2 {
   margin: 0;
-  font-size: 24px;
-  padding-left: 20px; /* Ajuste para separar el texto del borde */
+  font-size: 1.8em;
 }
 
 .form-container {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  max-width: 600px;
+  margin: 20px auto; /* Centrar el formulario */
 }
 
 .user-info {
@@ -47,14 +32,20 @@
   margin: 5px 0;
 }
 
+.separator-line{
+  border: none;
+  border-top: 1px solid #999;
+  width: 75%;
+  margin: 20px auto;
+}
+
 .form-group {
-  margin-bottom: 18px;
-  position: relative; /* Para posicionar el icono de mapa */
+  margin-bottom: 15px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   font-weight: bold;
   color: #333;
 }
@@ -102,7 +93,8 @@
   border-radius: 5px;
   font-size: 1em;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;   /*Transiciones para suavizar los efectos */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);   /*Sombra inicial para todos los botones */
 }
 
 .btn.cancel {
@@ -112,15 +104,65 @@
 
 .btn.cancel:hover {
   background-color: #7a7a7a;
+  transform: translateY(-2px);   /*Efecto de levantamiento al pasar el mouse */
+}
+
+.btn.cancel:active {
+  transform: translateY(0);   /*Vuelve a la posición original al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);   /*Sombra más pequeña al hacer clic*/
+}
+
+.btn.cancel:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: translateY(0) !important;   /*Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  box-shadow: none !important;
 }
 
 .btn.primary {
-  background-color: #ff4d4d; /* Rojo similar al de la imagen */
+  background-color: #ff5e3a; /* Rojo similar al de la imagen */
   color: white;
 }
 
 .btn.primary:hover {
-  background-color: #e03f3f;
+  background-color: #e64a27;
+  transform: translateY(-2px); /*Efecto de levantamiento al pasar el mouse */
+}
+
+.btn.primary:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn.primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  /* AÑADIDO: Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* Estilos para mensajes de carga y error */
+.loading-message, .error-message {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.loading-message {
+  background-color: #e6f7ff; /* Azul claro */
+  color: #0056b3;
+  border: 1px solid #91d5ff;
+}
+
+.error-message {
+  background-color: #fff0f0; /* Rojo claro */
+  color: #ff4d4d;
+  border: 1px solid #ffccc7;
 }
 
 /* Media Queries para responsividad */

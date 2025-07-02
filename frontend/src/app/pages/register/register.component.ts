@@ -67,7 +67,7 @@ export class RegisterComponent implements OnInit {
       try {
         const success = await this.authService.register(email, password);
         if (success) {
-          alert('Usuario registrado con éxito (simulado)!');
+          alert('Usuario registrado con éxito!');
           this.router.navigate(['/login']);
         } else {
           this.errorMessage = 'Error en el registro. Inténtalo de nuevo.';

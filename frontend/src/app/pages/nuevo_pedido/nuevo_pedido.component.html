@@ -1,13 +1,13 @@
-<div class="container">
-  <div class="header">
-    <h2>Nuevo Pedido</h2>
-  </div>
+<div class="header">
+  <h2>Nuevo Pedido</h2>
+</div>
 
   <div class="form-container">
     <div class="user-info">
       <p>Usuario: {{ userName }}</p>
       <p>ID: {{ usuarioId }}</p>
     </div>
+    <hr class="separator-line">
 
     <form [formGroup]="newPedidoForm" (ngSubmit)="agregarPedido()">
       <!-- Campo para Restaurant ID -->
@@ -89,5 +89,5 @@
         <button type="submit" class="btn primary" [disabled]="newPedidoForm.invalid">Agregar Pedido</button>
       </div>
     </form>
-  </div>
 </div>
+

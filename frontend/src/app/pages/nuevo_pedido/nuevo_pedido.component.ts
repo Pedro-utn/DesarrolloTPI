@@ -127,7 +127,7 @@ export class NuevoPedidoComponent implements OnInit {
       next: (response) => {
         console.log('Pedido agregado con éxito:', response);
         alert('Pedido agregado con éxito!'); // Usar un modal en lugar de alert en prod
-        this.router.navigate(['/home']);
+        this.router.navigate(['/lista-pedidos']); // Redirigir a la lista de pedidos
       },
       error: (error: Error) => { // Especificamos el tipo de error como Error
         console.error('Error al agregar el pedido en el componente:', error);
@@ -144,7 +144,7 @@ export class NuevoPedidoComponent implements OnInit {
 
   cancelar() {
     console.log('Creación de pedido cancelada.');
-    this.router.navigate(['/home']);
+    this.router.navigate(['/lista-pedidos']); // Redirigir a la lista de pedidos
   }
 
   // Getters para acceder a los controles del formulario en el HTML

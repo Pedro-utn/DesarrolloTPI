@@ -1,4 +1,3 @@
-
 -- 1. Insertar permisos 
 INSERT INTO PERMISSIONS (name) VALUES  -- id esta automatizado
 ('getRole'), --id: 1

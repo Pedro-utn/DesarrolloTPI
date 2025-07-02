@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { MeResponse } from '../interfaces/user.interface'; 
+import { User } from '../interfaces/user.interface'; 
 
 // Lógica para iniciar sesión y registrar usuarios
 @Injectable({
@@ -102,7 +102,7 @@ export class AuthService {
   }
 
   // Método para obtener la información del usuario logueado
-  getMe(): Observable<MeResponse> {
+  getMe(): Observable<User> {
     const headers = this.getAuthHeaders(); // Obtiene los headers de autorización
     // Si no hay token, lanza un error inmediatamente
     if (!headers) {
@@ -110,7 +110,7 @@ export class AuthService {
     }
     
     // Realiza la petición GET al endpoint '/me' con los headers de autenticación
-    return this.http.get<MeResponse>(`${this.apiUrl}/me`, { headers }).pipe(
+    return this.http.get<User>(`${this.apiUrl}/me`, { headers }).pipe(
       catchError(this.handleError) // Captura y maneja cualquier error HTTP
     );
   }

@@ -2,7 +2,6 @@
   background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colores de tu imagen */
   color: white;
   padding: 15px 20px;
-  border-radius: 8px 8px 0 0;
   display: flex;
   justify-content: space-between; /* Espacio entre el título y los botones */
   align-items: center;
@@ -71,7 +70,10 @@
   border-radius: 5px;
   cursor: pointer;
   font-size: 0.9em;
-  transition: background-color 0.2s, opacity 0.2s;
+  /* AÑADIDO: Transiciones para suavizar los efectos */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  /* AÑADIDO: Sombra inicial para todos los botones */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary {
@@ -80,6 +82,14 @@
 }
 .btn-primary:hover {
   background-color: #e64a27;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .btn-info {
@@ -88,6 +98,14 @@
 }
 .btn-info:hover {
   background-color: #138496;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-info:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .btn-danger {
@@ -96,6 +114,14 @@
 }
 .btn-danger:hover {
   background-color: #c82333;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-danger:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
@@ -104,11 +130,22 @@
 }
 .btn-secondary:hover {
   background-color: #5a6268;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-secondary:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  /* AÑADIDO: Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  transform: translateY(0) !important;
+  box-shadow: none !important;
 }
 
 .text-center {
@@ -131,11 +168,15 @@
   color: #333;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s, border-color 0.2s;
+  /* AÑADIDO: Transiciones para suavizar los efectos */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra inicial para paginación */
 }
 
 .pagination-btn:hover:not(.active):not(:disabled) {
   background-color: #e9ecef;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
 }
 
 .pagination-btn.active {
@@ -143,10 +184,24 @@
   color: white;
   border-color: #007bff;
   font-weight: bold;
+  /* Asegura que los botones activos no se muevan */
+  transform: translateY(0) !important;
+  box-shadow: none !important; /* O una sombra diferente si lo deseas */
 }
 
 .pagination-btn:disabled {
   background-color: #e9ecef;
   color: #aaa;
   cursor: not-allowed;
+  /* AÑADIDO: Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* AÑADIDO: Estilos para el botón "Volver" */
+.back-button-container {
+  position: fixed; /* Posicionamiento fijo respecto al viewport */
+  bottom: 20px;    /* 20px desde la parte inferior */
+  left: 20px;      /* 20px desde la parte izquierda */
+  z-index: 1000;   /* Asegura que esté por encima de otros elementos */
 }

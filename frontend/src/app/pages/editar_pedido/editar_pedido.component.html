@@ -2,12 +2,12 @@
   <h2>Editar Pedido</h2>
 </div>
 
-<div class="form-container">
-  <div class="user-info-display">
-    <p>Usuario ID: <strong>{{ currentUserId }}</strong></p>
-    <p>Email: <strong>{{ currentUserEmail || 'Cargando...' }}</strong></p>
-    <p *ngIf="currentUserRole">Rol: <strong>{{ currentUserRole }}</strong></p>
-  </div>
+  <div class="form-container">
+    <div class="user-info">
+      <p>Usuario: {{ userName }}</p>
+      <p>ID: {{ usuarioId }}</p>
+    </div>
+    <hr class="separator-line">
 
   @if (isLoading) {
     <div class="loading-message">

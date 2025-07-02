@@ -5,7 +5,6 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { Subscription } from 'rxjs';
 
 import { OrderService } from '../../services/order.service';
-import { MeResponse } from '../../interfaces/user.interface'; 
 import { AuthService } from '../../services/auth.service';
 import { Order, OrderLocation, OrderUpdateRequest } from '../../interfaces/order.interface';
 
@@ -27,9 +26,8 @@ export class EditarPedidoComponent implements OnInit, OnDestroy {
   estados: string[] = ['pending', 'in_progress', 'delivered', 'cancelled'];
 
   // Propiedades para mostrar info del usuario logeado
-  currentUserId: string = 'N/A'; // 'N/A' porque tu backend /me no devuelve el ID por defecto CAMBIAR!!!
-  currentUserEmail: string | null = null;
-  currentUserRole: string | null = null;
+  usuarioId: string = '';   // Se obtiene desde localStorage
+  userName: string = '';    // Se obtiene desde localStorage
 
    // Objeto Subscription para manejar todas las suscripciones y desuscribirse en ngOnDestroy
   private subscriptions: Subscription = new Subscription();
@@ -95,8 +93,8 @@ export class EditarPedidoComponent implements OnInit, OnDestroy {
     const storedEmail = localStorage.getItem('userEmail');
 
     if (storedId && storedEmail) {
-      this.currentUserId = storedId;
-      this.currentUserEmail = storedEmail;
+      this.usuarioId = storedId;
+      this.userName = storedEmail;
     } else {
       this.errorMessage = 'No se encontró información del usuario en localStorage.';
       this.authService.logout(); // Forzar logout si no hay datos

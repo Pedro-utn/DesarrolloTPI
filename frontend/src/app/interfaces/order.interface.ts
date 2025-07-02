@@ -19,13 +19,13 @@ export interface Order {
 }
 
 // Esta interfaz describe los parámetros que Angular le envia a la API
-// en la URL para pedir la paginación.
+// en la URL para pedir la paginación
 export interface PaginationQueryParams {
   page?: number;
   quantity?: number; 
 }
 
-// Esta es la interfaz que ya tenías para ENVIAR pedidos (POST).
+// Esta es la interfaz para ENVIAR pedidos (POST)
 export interface NewOrderRequest {
   userId: string;
   restaurantId: number;
