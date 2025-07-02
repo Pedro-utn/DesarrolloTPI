@@ -6,9 +6,7 @@ import { UserEntity } from "../../modules/users/entities/user.entity";
 import { UsersService } from "../../modules/users/users.service";
 import { Repository } from "typeorm";
 
-// Servicio de autenticación y autorización
-// Encargado de validar tokents JWT y verificar permisos de usuario
-// dependiendo de su rol y los permisos del mismo
+// Servicio de autenticación y autorización encargado de validar tokents JWT y verificar permisos de usuario dependiendo de su rol y los permisos del mismo
 
 @Injectable()
 export class AuthService {

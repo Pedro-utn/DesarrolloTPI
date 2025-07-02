@@ -71,7 +71,6 @@ export class JwtService {
       const decoded = verify(cleanToken, this.config[type].secret) as Payload;
       return decoded;
     } catch (error) {
-      // Maneja diferentes tipos de errores de JWT
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException("Token de autenticación expirado.");
 

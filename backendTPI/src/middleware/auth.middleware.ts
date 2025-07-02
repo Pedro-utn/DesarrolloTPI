@@ -9,7 +9,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
-// ✅ Decorador @Permissions unificado con mode: 'any' | 'all'
+//Decorador @Permissions unificado con mode: 'any' | 'all'
 export const Permissions = (
   permissions: string[],
   mode: 'any' | 'all' = 'all',
@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = authHeader.replace('Bearer ', '');
-    request['accessToken'] = token; // <- ✅ guardamos el token para usarlo luego
+    request['accessToken'] = token; //guardamos el token para usarlo luego
 
 
     // ✅ Lectura defensiva de metadata

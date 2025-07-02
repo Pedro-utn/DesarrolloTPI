@@ -46,17 +46,16 @@ coverage/
 ._*
 
 # Dependencias instaladas por 'npm ci'
-# package-lock.json # Descomenta si *no* quieres versionar el package-lock.json (raro en Angular)
 
 # Archivos de compilación TypeScript
 *.js.map
 *.d.ts
 !src/**/*.d.ts # Mantener los archivos .d.ts generados en src
 
-# Archivos de compilación de Cypress (si usas e2e tests)
+# Archivos de compilación de Cypress 
 cypress/videos/
 cypress/screenshots/
 
-# Archivos de configuración de Netlify / Vercel (si los usas)
+# Archivos de configuración de Netlify / Vercel
 .netlify/
 .vercel/
