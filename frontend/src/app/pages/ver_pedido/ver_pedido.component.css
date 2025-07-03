@@ -1,0 +1,194 @@
+/* src/app/pages/detalle-pedido/ver_pedido.component.css */
+
+.header {
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colores de la imagen */
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.form-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  max-width: 600px;
+  margin: 20px auto; /* Centrar el formulario */
+}
+
+.user-info {
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  color: #555;
+}
+
+.user-info p {
+  margin: 5px 0;
+}
+
+.separator-line{
+  border: none;
+  border-top: 1px solid #999;
+  width: 75%;
+  margin: 20px auto;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group .display-value {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+  background-color: #e9ecef;
+  color: #495057;
+  min-height: 38px;
+  word-wrap: break-word; 
+  overflow-wrap: break-word;
+}
+
+.map-icon {
+  position: absolute;
+  right: 10px;
+  top: 60%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #777;
+  padding: 5px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn.cancel {
+  background-color: #8c8c8c;
+  color: white;
+}
+
+.btn.cancel:hover {
+  background-color: #7a7a7a;
+  transform: translateY(-2px);
+}
+
+.btn.cancel:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn.cancel:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* El botón primary no se usará en la vista de solo lectura, pero lo mantengo por completitud */
+.btn.primary {
+  background-color: #ff5e3a;
+  color: white;
+}
+
+.btn.primary:hover {
+  background-color: #e64a27;
+  transform: translateY(-2px);
+}
+
+.btn.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn.primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* Estilos para mensajes de carga y error */
+.loading-message, .error-message, .no-data-message {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.loading-message {
+  background-color: #e6f7ff;
+  color: #0056b3;
+  border: 1px solid #91d5ff;
+}
+
+.error-message {
+  background-color: #fff0f0;
+  color: #ff4d4d;
+  border: 1px solid #ffccc7;
+}
+
+.no-data-message {
+    background-color: #f0f0f0; /* Color neutro para "no data" */
+    color: #6c757d;
+    border: 1px solid #dcdcdc;
+}
+
+
+/* Media Queries para responsividad */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 20px;
+  }
+
+  .header {
+    padding: 10px 15px;
+  }
+
+  .header h2 {
+    font-size: 20px;
+    padding-left: 10px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
