@@ -59,14 +59,14 @@ services:
       sh -c "
       if [ ! -f /shared/init_done ]; then
         sleep 10
-        PGPASSWORD=postgres psql -h db -U postgres -d postgres -f /init.sql
+        PGPASSWORD=postgres psql -h database-jwt -U postgres -d postgres -f /init.sql
         touch /shared/init_done
         echo 'Database initialized'
       else
         echo 'Database already initialized, skipping...'
       fi
       "
-
+      
     environment:
       POSTGRES_PASSWORD: postgres
 
