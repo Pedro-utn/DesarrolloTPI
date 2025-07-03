@@ -1,5 +1,5 @@
-import { UserI } from "src/interfaces/user.interface";
-import { Role } from "src/entities/roles/role.entity";
+import { UserI } from "src/modules/interfaces/user.interface";
+import { Role } from "../../roles/entities/role.entity";
 import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity("users")

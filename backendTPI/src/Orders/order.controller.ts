@@ -30,7 +30,7 @@ export class OrderController {
   }
 
   @Get()
-  @Permissions(['findAllOrder', 'findMyOrders'], 'any')
+  @Permissions(['findAllOrder', 'findMyOrders'], 'any') 
   async findAll(@Req() req) {
     const user = req.user;
 
@@ -42,8 +42,6 @@ export class OrderController {
       throw new UnauthorizedException('No tiene permisos para ver órdenes');
     }
   }
-
-
 
   @Get(':id')
   @Permissions(['findOneOrder'])

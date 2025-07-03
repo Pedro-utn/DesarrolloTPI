@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { sign, verify, JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken"; // Importa los tipos de error específicos
 import * as dayjs from "dayjs"; // librería para manejar fechas
-import { Payload } from "src/interfaces/payload";
+import { Payload } from "src/modules/interfaces/payload";
 
 // Servicio para manejar la gestión de JSON Web Tokens (JWT)
 // Hay métodos para generar tokens, refrescarlos y obtener el payload de un token
@@ -71,7 +71,6 @@ export class JwtService {
       const decoded = verify(cleanToken, this.config[type].secret) as Payload;
       return decoded;
     } catch (error) {
-      // Maneja diferentes tipos de errores de JWT
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException("Token de autenticación expirado.");
 

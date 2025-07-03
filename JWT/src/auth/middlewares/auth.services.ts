@@ -1,14 +1,12 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { JwtService } from "src/jwt/jwt.service";
-import { Role } from "src/entities/roles/role.entity";
-import { UserEntity } from "../entities/users/user.entity";
-import { UsersService } from "../entities/users/users.service";
+import { JwtService } from "src/auth/jwt/jwt.service";
+import { Role } from "../../modules/roles/entities/role.entity";
+import { UserEntity } from "../../modules/users/entities/user.entity";
+import { UsersService } from "../../modules/users/users.service";
 import { Repository } from "typeorm";
 
-// Servicio de autenticación y autorización
-// Encargado de validar tokents JWT y verificar permisos de usuario
-// dependiendo de su rol y los permisos del mismo
+// Servicio de autenticación y autorización encargado de validar tokents JWT y verificar permisos de usuario dependiendo de su rol y los permisos del mismo
 
 @Injectable()
 export class AuthService {

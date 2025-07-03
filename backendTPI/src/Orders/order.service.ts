@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException,Inject, forwardRef }
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthGuard } from 'src/middleware/auth.middleware';
 import { Repository } from 'typeorm';
-import { AuthHelper } from '../middleware/auth.helper'; // ajustá ruta
+import { AuthHelper } from '../middleware/auth.helper';
 import { Order } from './order';
 import { Location } from './order';
 
@@ -13,8 +13,7 @@ export class OrderService {
     private orderRepository: Repository<Order>,
     @InjectRepository(Location)
     private locationRepository: Repository<Location>,
-    private authHelper: AuthHelper, // <--- nuevo
-
+    private authHelper: AuthHelper,
   ) {}
 
   private formatOrderResponse(order: Order, location: Location): any {
@@ -45,7 +44,6 @@ export class OrderService {
 
   const location = this.locationRepository.create(locationData);
   const savedLocation = await this.locationRepository.save(location);
-
   const order = this.orderRepository.create({
     userId: orderData.userId,
     restaurantId: orderData.restaurantId,
@@ -54,24 +52,19 @@ export class OrderService {
   });
 
   const savedOrder = await this.orderRepository.save(order);
-
   const fullLocation = await this.locationRepository.findOneBy({ id: savedLocation.id });
   if (!fullLocation) {
     throw new NotFoundException(`Location with ID ${savedLocation.id} not found`);
   }
-
   return this.formatOrderResponse(savedOrder, fullLocation);
 }
 
 async findByUserId(token: string, page?: number, quantity?: number): Promise<any[]> {
-  const user = await this.authHelper.getMe(token); // 🔐 obtener el usuario desde /me
+  const user = await this.authHelper.getMe(token); //obtener el usuario desde /me
   const userId = user.id;
-
   const itemsPerPage = quantity ? Math.max(1, quantity) : 10;
   const currentPage = page ? Math.max(1, page) : 1;
-
   const skip = (currentPage - 1) * itemsPerPage;
-
   const rows = await this.orderRepository
     .createQueryBuilder('order')
     .leftJoin('location', 'location', 'order.locationId = location.id')
@@ -107,9 +100,6 @@ async findByUserId(token: string, page?: number, quantity?: number): Promise<any
     )
   );
 }
-
-
-
   async findAll(page?: number, quantity?: number): Promise<any[]> {
     const itemsPerPage = quantity ? Math.max(1, quantity) : 10;
     const currentPage = page ? Math.max(1, page) : 1;

@@ -1,26 +1,7 @@
-import { 
-  Controller, 
-  Post, 
-  UseGuards,
-  Body,   
-  Get, 
-  Param, 
-  Put, 
-  Delete, 
-  ParseIntPipe,
-  HttpStatus,
-  HttpCode,
-  Query
-} from '@nestjs/common';
-import { 
-  PaymentsService, 
-  CreatePaymentDto, 
-  UpdatePaymentStatusDto, 
-  RefundPaymentDto 
-} from './payment.service';
+import { Controller, Post, UseGuards,Body, Get, Param, Put, Delete, ParseIntPipe, HttpStatus , HttpCode , Query } from '@nestjs/common';
+import { PaymentsService, CreatePaymentDto, UpdatePaymentStatusDto, RefundPaymentDto } from './payment.service';
 import { AuthGuard } from 'src/middleware/auth.middleware';
 import { Permissions } from 'src/middleware/auth.middleware';
-
 
 @UseGuards(AuthGuard) 
 @Controller('payment')
@@ -52,9 +33,8 @@ export class PaymentsController {
   ): Promise<any[]> {
     const pageNum = page ? parseInt(page, 10): undefined;
     const quantityNum = quantity ? parseInt(quantity, 10): undefined;
-    
     const payments = await this.paymentsService.findAll(pageNum, quantityNum);
-    
+  
     return payments.map(payment => ({
       id: payment.id,
       orderId: payment.order.id,
@@ -67,8 +47,6 @@ export class PaymentsController {
       paymentTime: payment.transactionDetail?.payment_time
     }));
   }
-
-
   @Get(':id')
   @Permissions(['findOnePayment'])
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
@@ -85,7 +63,6 @@ export class PaymentsController {
       paymentTime: payment.transactionDetail?.payment_time
     };
   }
-
   @Put(':id/status')
   @Permissions(['updateStatusPayment'])
   async updateStatus(
@@ -105,7 +82,6 @@ export class PaymentsController {
       paymentTime: payment.transactionDetail?.payment_time
     };
   }
-
   @Post(':id/refund')
   @Permissions(['postRefundPayment'])
   async refund(
@@ -125,7 +101,6 @@ export class PaymentsController {
       refundTime: payment.refundDetail?.refund_time
     };
   }
-
   @Delete(':id')
   @Permissions(['deletePayment'])
   @HttpCode(HttpStatus.OK)

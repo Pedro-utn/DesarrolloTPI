@@ -1,13 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
-/**
- * Servicio auxiliar para llamadas al microservicio JWT (como /me).
- */
+ //Servicio auxiliar para llamadas al microservicio JWT (como /me).
 @Injectable()
 export class AuthHelper {
-  /**
-   * 🔍 Obtiene la información del usuario a través del endpoint /me del servicio JWT.
-   */
+  
+   //Obtiene la información del usuario a través del endpoint /me del servicio JWT.
+   
   async getMe(token: string): Promise<{
     id: number;
     email: string;

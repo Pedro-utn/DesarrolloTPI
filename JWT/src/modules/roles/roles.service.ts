@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "./role.entity";
+import { Role } from "../roles/entities/role.entity";
 import { In, Repository } from "typeorm";
-import { Permission } from "src/entities/permissions/permission.entity";
-import { IdOnlyPermissionDto } from "../permissions/permissions.service";
+import { Permission } from "../permission/entities/permission.entity";
+import { IdOnlyPermissionDto } from "../permission/permissions.service";
 
 export type CreateRoleDto = {
   name: string;
