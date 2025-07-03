@@ -10,7 +10,7 @@ services:
   # === SERVICIOS JWT (EJECUTAN PRIMERO) ===
 
 # 1. Base de datos JWT
-  db:
+  database-jwt:
     image: postgres:alpine
     container_name: trabajojwt-db
     restart: always
@@ -20,7 +20,7 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "4444:5432"
-    volumes:
+    volumes:  
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -45,17 +45,16 @@ services:
       - NODE_ENV=development        # ← Cambiar a development para hot-reload
     restart: unless-stopped
     depends_on:
-      db:
+      database-jwt:
         condition: service_healthy
     networks:
       - net
+
+
 # 3. Inicialización de DB JWT
-  db-init:
+  db-init-jwt:
     image: postgres:alpine
     container_name: db-init
-    depends_on:
-      jwt:
-        condition: service_started
     entrypoint: |
       sh -c "
       if [ ! -f /shared/init_done ]; then
@@ -74,6 +73,9 @@ services:
     volumes:
       - ./JWT/sql/init.sql:/init.sql:ro
       - postgres_data:/shared
+    depends_on:
+      jwt:
+        condition: service_started
 
     networks:
       - net
@@ -82,7 +84,7 @@ services:
 # === SERVICIOS BACKEND PRINCIPAL (EJECUTAN DESPUÉS) ===
 
 # 4. Base de datos principal
-  database:
+  database-backend:
     image: postgres:alpine
     environment:
       - POSTGRES_PASSWORD=1234
@@ -101,9 +103,7 @@ services:
       - postgres-db:/var/lib/postgresql/data
     networks:
       - net
-    depends_on:
-      db-init:
-        condition: service_completed_successfully
+
 
 # 5. Backend principal
   backend:
@@ -124,7 +124,7 @@ services:
       - DATABASE_PASSWORD=1234
       - JWT_SERVICE_URL=http://jwt:3001  # ← Agregar esta línea
     depends_on:
-      database:
+      database-backend:
         condition: service_healthy
     networks:
       - net
@@ -142,8 +142,5 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-    depends_on:
-      backend:
-        condition: service_started
     networks:
       - net

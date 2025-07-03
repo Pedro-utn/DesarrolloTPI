@@ -9,7 +9,7 @@ import { PaymentsModule } from './Payments/payment.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'database',
+      host: 'database-backend',
       port: 5432,
       username: 'postgres',
       password: '1234',
