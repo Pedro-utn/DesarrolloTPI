@@ -7,7 +7,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { NuevoPedidoComponent } from './pages/nuevo_pedido/nuevo_pedido.component';
 import { EditarPedidoComponent } from './pages/editar_pedido/editar_pedido.component';
 import { ListaPedidosComponent } from './pages/lista_pedidos/lista_pedidos.component';
-
+import { VerPedidoComponent } from './pages/ver_pedido/ver_pedido.component';
 import { authGuard } from './auth.guard';
 
 // Esta clase se encarga de redirigir a las rutas correspondientes
@@ -37,6 +37,11 @@ export const routes: Routes = [
     path: 'lista-pedidos',
     component: ListaPedidosComponent,
     canActivate: [authGuard] // Protege la ruta 'lista_pedidos'
+  },
+  {
+    path: 'ver-pedido/:id',
+    component: VerPedidoComponent,
+    canActivate: [authGuard]
   },
   { path: '**', redirectTo: '/login' }
 ];

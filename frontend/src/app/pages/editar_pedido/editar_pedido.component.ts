@@ -40,7 +40,7 @@ export class EditarPedidoComponent implements OnInit, OnDestroy {
   ) {}
 
   // Método de ciclo de vida que se ejecuta al inicializar el componente
-  // Aquí se carga la información del usuario y se inicializa el formulario reactivo
+  // Aca se carga la información del usuario y se inicializa el formulario reactivo
   // También se carga el pedido a editar si se proporciona un ID válido en la ruta
   async ngOnInit(): Promise<void> {
     this.loadCurrentUserInfo(); // Cargar la información del usuario (email, id[que no lo da en realidad xd])
@@ -91,7 +91,6 @@ export class EditarPedidoComponent implements OnInit, OnDestroy {
   loadCurrentUserInfo(): void {
     const storedId = localStorage.getItem('userId');
     const storedEmail = localStorage.getItem('userEmail');
-
     if (storedId && storedEmail) {
       this.usuarioId = storedId;
       this.userName = storedEmail;

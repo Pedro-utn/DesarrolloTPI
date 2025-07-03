@@ -130,7 +130,7 @@ export class ListaPedidosComponent implements OnInit {
 
   verPedido(): void {
     if (this.pedidoSeleccionado) {
-      this.router.navigate(['/ver-pedido', this.pedidoSeleccionado.id]);
+      this.router.navigate(['/ver-pedido', this.pedidoSeleccionado.id])
     } else {
       alert('Por favor, selecciona un pedido para ver.');
     }
