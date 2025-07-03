@@ -7,8 +7,9 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, AbstractContro
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { OrderService } from '../../services/order.service';
+import { NewOrderRequest } from '../../interfaces/order.interface';
 
-// Custom validator for comma-separated numbers (mantenemos esto aquí, es específico del form)
+// Custom validator for comma-separated numbers
 function commaSeparatedNumbersValidator(control: AbstractControl): { [key: string]: any } | null {
   const value = control.value;
   if (!value) {
@@ -20,22 +21,6 @@ function commaSeparatedNumbersValidator(control: AbstractControl): { [key: strin
     return { 'commaSeparatedNumbers': { value: control.value } };
   }
   return null;
-}
-
-// Interfaz para el payload de la orden (la misma que en el OrderService)
-interface NewOrderRequest {
-  userId: string;
-  restaurantId: number;
-  products: number[];
-  location: {
-    street: string;
-    number: string;
-    cityId: number;
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
 }
 
 @Component({
@@ -60,18 +45,27 @@ export class NuevoPedidoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Obtener datos del usuario desde localStorage
+    this.loadUserData();
+    this.initializeForm();
+  }
+  
+  private loadUserData(): void {
     const storedId = localStorage.getItem('userId');
     const storedEmail = localStorage.getItem('userEmail');
+
     if (storedId && storedEmail) {
       this.usuarioId = storedId;
       this.userName = storedEmail;
     } else {
-      this.errorMessage = 'No se encontró información del usuario.';
-      this.authService.logout(); // Forzamos logout si no hay datos válidos
-      return;
+      this.errorMessage = 'No se encontró información del usuario. Iniciando sesión nuevamente.';
+      // Dar un pequeño retraso antes de redirigir para que el usuario pueda ver el mensaje
+      setTimeout(() => {
+        this.authService.logout();
+      }, 2000);
     }
+  }
 
+  private initializeForm(): void {
     this.newPedidoForm = new FormGroup({
       restaurantId: new FormControl(null, [Validators.required, Validators.pattern(/^\d+$/)]),
       productsInput: new FormControl('', [Validators.required, commaSeparatedNumbersValidator]),
@@ -86,7 +80,7 @@ export class NuevoPedidoComponent implements OnInit {
       })
     });
   }
-  
+
   agregarPedido() {
     this.errorMessage = '';
 
@@ -100,9 +94,10 @@ export class NuevoPedidoComponent implements OnInit {
     const formValues = this.newPedidoForm.value;
 
     // Parsear la cadena de productos a un array de números
-    const productIds: number[] = formValues.productsInput.split(',')
-                                                          .map((idStr: string) => parseInt(idStr.trim(), 10))
-                                                          .filter((id: number) => !isNaN(id));
+    const productIds: number[] = formValues.productsInput
+                                            .split(',')
+                                            .map((idStr: string) => parseInt(idStr.trim(), 10))
+                                            .filter((id: number) => !isNaN(id));
 
     // Construir el payload de la solicitud HTTP
     const pedidoParaAPI: NewOrderRequest = {
@@ -129,20 +124,21 @@ export class NuevoPedidoComponent implements OnInit {
         alert('Pedido agregado con éxito!'); // Usar un modal en lugar de alert en prod
         this.router.navigate(['/lista-pedidos']); // Redirigir a la lista de pedidos
       },
-      error: (error: Error) => { // Especificamos el tipo de error como Error
+      error: (error: any) => { 
         console.error('Error al agregar el pedido en el componente:', error);
-        // Si el error es por token, el AuthService.getAuthHeaders ya lo debería manejar.
-        // Aquí mostramos el mensaje de error general o más específico si el servicio lo devuelve.
-        this.errorMessage = error.message || 'Hubo un problema al agregar el pedido.';
-        // Si el error indica que la sesión expiró (ej. 401), forzamos logout
-        if (error.message.includes('Acceso denegado') || error.message.includes('No autorizado')) {
-          this.authService.logout();
+        // Manejo específico para errores de autenticación/autorización
+        if (error.status === 401 || error.status === 403) {
+            this.errorMessage = 'Sesión expirada o no autorizada. Por favor, inicia sesión de nuevo.';
+            this.authService.logout();
+        } else {
+            // Usa el mensaje del backend si está disponible, o uno genérico
+            this.errorMessage = error.error?.message || error.message || 'Hubo un problema al agregar el pedido.';
         }
       }
     });
   }
 
-  cancelar() {
+  cancelar(): void {
     console.log('Creación de pedido cancelada.');
     this.router.navigate(['/lista-pedidos']); // Redirigir a la lista de pedidos
   }

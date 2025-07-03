@@ -1,3 +1,54 @@
+# App Frontend
+
+## Guía de Ejecución
+
+---
+
+### Iniciar con Docker
+
+**Dockerizamos** el proyecto para simplificar al máximo su setup. Solo necesitas ejecutar un comando, si se quiere levantar todo:
+
+```bash
+docker compose up --build
+```
+
+En el caso que se quiera levantar los microservicios por separado, lo que puede hacer es:
+
+Backend:
+```bash
+docker compose up backend
+```
+JWT:
+```bash
+docker compose up jwt db-init-jwt
+```
+Frontend:
+```bash
+docker compose up frontend
+```
+---
+
+### Acceso a la Aplicación
+
+Una vez que los contenedores estén en funcionamiento, simplemente ve a la siguiente URL:
+
+[http://localhost:4200/]
+
+---
+
+###  Iniciar Sesión
+
+Para iniciar sesión en la aplicacion:
+  * **Registrese** 
+  * **Inicie Sesion con sus Credenciales**
+
+Para iniciar sesión en la aplicación como admin:
+
+  * **Correo:** `admin@gmail.com`
+  * **Contraseña:** `admin123`
+
+---
+
 # Microservicio: JWT
 
 Servicio encargdo de verificar que el usuario tenga permiso de realizar ciertas request al backend.
@@ -333,30 +384,3 @@ Response:
 - `pending`: Pago pendiente.
 - `completed`: Pago completado.
 - `refunded`: Pago reembolsado.
-
-# App Frontend en Angular
-
-Este proyecto fue creado usando [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
-
-## Guia de ejecucion
-### Iniciar con Docker
-
-Para simplificar la prueba del proyecto, lo hemos dockerizado.
-```bash
-docker compose up --build
-```
-Una vez levantado el docker acceder a través de un cliente web a la url `http://localhost:4200/`
-
-
-## Iniciar Sesión
-
-Para loguearse en la app se debe usar un correo y contraseña de prueba:
-
-```bash
-Correo: test@example.com
-Contraseña: password
-```
-
-## Comentarios
-
-Solamente se hicieron las pantallas navegables, en forma de simulación.
