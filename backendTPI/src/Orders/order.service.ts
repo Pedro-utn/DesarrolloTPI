@@ -106,10 +106,6 @@ async findByUserId(token: string, page?: number, quantity?: number): Promise<any
 
     const skip = (currentPage - 1) * itemsPerPage;
 
-    console.log(`DEBUG Paginación: Recibido page=${page}, quantity=${quantity}`);
-    console.log(`DEBUG Paginación: Calculado currentPage=${currentPage}, itemsPerPage=${itemsPerPage}, skip=${skip}`);
-    
-
     const rows = await this.orderRepository
       .createQueryBuilder('order')
       .leftJoin('location', 'location', 'order.locationId = location.id')

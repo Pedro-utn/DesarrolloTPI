@@ -31,13 +31,17 @@ export class OrderController {
 
   @Get()
   @Permissions(['findAllOrder', 'findMyOrders'], 'any') 
-  async findAll(@Req() req) {
+  async findAll(
+    @Req() req,
+    @Query('page') page?: number,
+    @Query('quantity') quantity?: number
+  ){
     const user = req.user;
 
     if (user.permissions.includes('findAllOrder')) {
-      return this.orderService.findAll();
+      return this.orderService.findAll(page, quantity); 
     } else if (user.permissions.includes('findMyOrders')) {
-      return this.orderService.findByUserId(req.accessToken);
+      return this.orderService.findByUserId(req.accessToken, page, quantity);
     } else {
       throw new UnauthorizedException('No tiene permisos para ver órdenes');
     }
