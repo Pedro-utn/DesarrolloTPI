@@ -1,0 +1,241 @@
+/* src/app/pages/home/home.component.css */
+
+/* Contenedor principal que abarca toda la pantalla y maneja el diseño de tres columnas */
+.page-container {
+  display: flex; /* Habilitar Flexbox para las columnas */
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  width: 100vw; /* Asegura que ocupe todo el ancho de la ventana */
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+  background: linear-gradient(
+    to bottom right,
+    #ff7e5f,
+    #feb47b
+  ); /* Fondo degradado similar al del login para el fondo general */
+}
+
+/* Columna de la izquierda (imagen) */
+.left-panel {
+  flex: 1; /* Ocupa el espacio disponible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.left-panel img {
+  max-width: 80%; /* Ajusta el tamaño de la imagen */
+  height: auto;
+  animation: float 3s ease-in-out infinite; /* Animación flotante */
+}
+
+/* Columna central (contenido de la home) */
+.main-content-panel {
+  flex: 2; /* Ocupa más espacio que las columnas de imagen, ajusta según necesites */
+  background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco o ligeramente translúcido para el contenido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Columna de la derecha (imagen) */
+.right-panel {
+  flex: 1; /* Ocupa el espacio disponible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.right-panel img {
+  max-width: 80%; /* Ajusta el tamaño de la imagen */
+  height: auto;
+  animation: float 3s ease-in-out infinite; /* Animación flotante */
+}
+
+/* Contenedor del contenido (la "ventana" central) - ajustado para estar dentro de main-content-panel */
+.home-content-container {
+  background-color: #ffffffe7; /* Fondo ligeramente más opaco y translúcido */
+  border-radius: 15px;
+  box-shadow: 0 8px 30px #00000077; /* Sombra más pronunciada para dar profundidad */
+  padding: 40px !important;
+  max-width: 800px;
+  width: 90%; /* Ajuste para mejor responsividad */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* El color del texto se ajustará ahora que no está sobre una imagen de fondo */
+  color: #333; /* Color de texto oscuro para contraste con el fondo claro */
+}
+
+/* Estilos para el texto dentro del home, ajustados para el nuevo fondo */
+.home-content-container h1 {
+  color: #333; /* Cambiado a oscuro */
+  text-shadow: none; /* Ya no es necesario */
+  font-weight: bold;
+  font-size: 3.5em;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.home-content-container p {
+  font-size: 1.3em;
+  line-height: 1.6;
+  text-shadow: none; /* Ya no es necesario */
+}
+
+.home-content-container p.text-muted {
+  color: #666 !important; /* Color más oscuro para el texto muted */
+}
+
+/* Estilos para los botones (se mantienen igual ya que funcionan bien) */
+.home-content-container .btn-info {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 12px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-content-container .btn-info:hover {
+  background-color: #5a6268;
+  border-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.home-content-container .btn-info:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.home-content-container .btn-primary {
+  background-color: #ff7e5f;
+  border-color: #ff7e5f;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 12px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-content-container .btn-primary:hover {
+  background-color: #e66a4f;
+  border-color: #e66a4f;
+  transform: translateY(-2px);
+}
+
+.home-content-container .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.text-center.mb-5 {
+  width: 100%;
+}
+
+.d-flex.justify-content-center.mt-3.gap-2 {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Animación flotante (copiada del login.css) */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Estilos para el botón "Cerrar Sesión" en la parte inferior */
+.logout-button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* Mantenerlo en la esquina inferior izquierda */
+  z-index: 1000;
+}
+
+.logout-button-container .btn {
+  padding: 10px 15px;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button-container .btn:hover {
+  transform: translateY(-2px);
+}
+
+.logout-button-container .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button-container .btn:disabled {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* Estilos para el botón `btn-danger` si no están definidos globalmente */
+.home-content-container .btn-danger {
+  background-color: #dc3545; /* Rojo */
+  border-color: #dc3545;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 12px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-content-container .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  transform: translateY(-2px);
+}
+
+.home-content-container .btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Media Queries para dispositivos más pequeños (adaptadas) */
+@media (max-width: 768px) {
+  .page-container {
+    flex-direction: column; /* Apilar las columnas verticalmente en móviles */
+  }
+
+  .left-panel,
+  .right-panel {
+    min-height: 150px; /* Altura mínima para las imágenes en móviles */
+    padding: 15px;
+    flex: none; /* Desactiva el flex grow para que no ocupen todo el espacio horizontal */
+    width: 100%; /* Asegura que ocupen todo el ancho disponible */
+  }
+
+  .main-content-panel {
+    padding: 15px;
+    flex: none;
+    width: 100%;
+  }
+
+  .home-content-container {
+    padding: 25px !important;
+    box-shadow: none; /* Eliminar sombra en móviles para un look más limpio */
+  }
+}

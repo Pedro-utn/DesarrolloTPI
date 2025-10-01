@@ -1,0 +1,33 @@
+<div class="page-container">
+  <div class="left-panel">
+    <img src="assets/repartidor_delivery.png" alt="Delivery Scooter">
+  </div>
+
+  <div class="right-panel">
+    <div class="login-form-wrapper">
+      <h2>Iniciar Sesión</h2>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <input type="email" id="username" formControlName="username" class="form-control" placeholder="Correo electrónico">
+          <div *ngIf="formControls['username'].invalid && (formControls['username'].dirty || formControls['username'].touched)" class="text-danger">
+            <div *ngIf="formControls['username'].errors?.['required']">El correo electrónico es requerido.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input type="password" id="password" formControlName="password" class="form-control" placeholder="Contraseña">
+          <div *ngIf="formControls['password'].invalid && (formControls['password'].dirty || formControls['password'].touched)" class="text-danger">
+            <div *ngIf="formControls['password'].errors?.['required']">La contraseña es requerida.</div>
+          </div>
+        </div>
+
+        <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
+
+        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+      </form>
+
+      <a class="form-link" (click)="goToRegister()">Registrarse</a>
+    </div>
+  </div>
+</div>

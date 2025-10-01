@@ -1,0 +1,66 @@
+<div class="header">
+  <h2>Pedido #{{ pedido?.id }}</h2>
+</div>
+
+<div class="form-container">
+  <div class="user-info">
+    <p>Usuario: {{ userName }}</p>
+    <p>ID: {{ usuarioId }}</p>
+  </div>
+  <hr class="separator-line">
+
+  <div class="loading-message" *ngIf="isLoading && !pedido && !errorMessage">
+    <p>Cargando detalles del pedido...</p>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div class="no-data-message" *ngIf="!pedido && !isLoading && !errorMessage">
+    <p>No se encontraron detalles para este pedido o el ID es inválido.</p>
+  </div>
+
+  <div *ngIf="pedido && !isLoading && !errorMessage">
+    <div class="form-group">
+      <label>Estado:</label>
+      <p class="display-value">{{ pedido.status || 'N/A' }}</p>
+    </div>
+
+    <div class="form-group">
+      <label>Delivery:</label>
+      <p class="display-value">{{ pedido.delivery || 'N/A' }}</p>
+    </div>
+
+    <h3>Dirección de Entrega:</h3>
+    <div *ngIf="pedido.location" class="location-details">
+      <div class="form-group">
+        <label>Calle:</label>
+        <p class="display-value">{{ pedido.location.street || 'N/A' }}</p>
+      </div>
+      <div class="form-group">
+        <label>Número:</label>
+        <p class="display-value">{{ pedido.location.number || 'N/A' }}</p>
+      </div>
+      <div class="form-group">
+        <label>Ciudad (ID):</label>
+        <p class="display-value">{{ pedido.location.cityId || 'N/A' }}</p>
+      </div>
+      <div *ngIf="pedido.location.location" class="form-group">
+        <label>Latitud:</label>
+        <p class="display-value">{{ pedido.location.location.lat || 'N/A' }}</p>
+      </div>
+      <div *ngIf="pedido.location.location" class="form-group">
+        <label>Longitud:</label>
+        <p class="display-value">{{ pedido.location.location.lng || 'N/A' }}</p>
+      </div>
+    </div>
+    <div *ngIf="!pedido.location" class="form-group">
+      <p class="display-value">Información de ubicación no disponible.</p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn cancel" (click)="volverALista()">Volver a Pedidos</button>
+  </div>
+</div>

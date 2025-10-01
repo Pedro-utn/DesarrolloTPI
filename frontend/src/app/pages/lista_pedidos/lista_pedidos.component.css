@@ -1,0 +1,207 @@
+.header {
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colores de tu imagen */
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between; /* Espacio entre el título y los botones */
+  align-items: center;
+  gap: 15px; /* Espacio entre elementos principales */
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.actions-group {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones de acción */
+}
+
+.table-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 900px; /* Ajusta el ancho según tu preferencia */
+  margin: 20px auto; /* Centrar el contenedor */
+  overflow-x: auto; /* Para tablas que pueden desbordarse en pantallas pequeñas */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Elimina el espacio entre las celdas */
+  margin-bottom: 20px;
+  font-size: 0.95em;
+}
+
+.table th, .table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd; /* Bordes suaves */
+  text-align: left;
+}
+
+.table thead th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f8f8; /* Color de fila par */
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef; /* Resaltar fila al pasar el ratón */
+  cursor: pointer; /* Indicar que las filas son clickeables */
+}
+
+/* Estilo para fila seleccionada */
+.table tbody tr.selected {
+  background-color: #d6f2ff; /* Un azul claro para la selección */
+  border: 2px solid #007bff;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  /* AÑADIDO: Transiciones para suavizar los efectos */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  /* AÑADIDO: Sombra inicial para todos los botones */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+  background-color: #ff5e3a; /* Naranja-Rojo */
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #e64a27;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-info {
+  background-color: #17a2b8; /* Azul claro */
+  color: white;
+}
+.btn-info:hover {
+  background-color: #138496;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-info:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Rojo */
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-danger:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+  background-color: #6c757d; /* Gris */
+  color: white;
+}
+.btn-secondary:hover {
+  background-color: #5a6268;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+.btn-secondary:active {
+  /* AÑADIDO: Vuelve a la posición original al hacer clic */
+  transform: translateY(0);
+  /* AÑADIDO: Sombra más pequeña al hacer clic */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  /* AÑADIDO: Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Estilos de paginación */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 5px;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  /* AÑADIDO: Transiciones para suavizar los efectos */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra inicial para paginación */
+}
+
+.pagination-btn:hover:not(.active):not(:disabled) {
+  background-color: #e9ecef;
+  /* AÑADIDO: Efecto de levantamiento al pasar el mouse */
+  transform: translateY(-2px);
+}
+
+.pagination-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+  /* Asegura que los botones activos no se muevan */
+  transform: translateY(0) !important;
+  box-shadow: none !important; /* O una sombra diferente si lo deseas */
+}
+
+.pagination-btn:disabled {
+  background-color: #e9ecef;
+  color: #aaa;
+  cursor: not-allowed;
+  /* AÑADIDO: Asegura que no se mueva ni tenga sombra si está deshabilitado */
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* AÑADIDO: Estilos para el botón "Volver" */
+.back-button-container {
+  position: fixed; /* Posicionamiento fijo respecto al viewport */
+  bottom: 20px;    /* 20px desde la parte inferior */
+  left: 20px;      /* 20px desde la parte izquierda */
+  z-index: 1000;   /* Asegura que esté por encima de otros elementos */
+}

@@ -1,0 +1,109 @@
+<div class="header">
+  <h2>Órdenes</h2>
+  <div class="actions-group">
+    <!-- Botón visible siempre, depende solo de la selección -->
+    <button class="btn btn-secondary" 
+            (click)="verPedido()" 
+            [disabled]="!pedidoSeleccionado">
+      Ver Pedido
+    </button>
+
+    <!-- Botón condicionado por permiso 'patchOrder' y selección -->
+    <button class="btn btn-info" 
+            (click)="editarPedido()" 
+            [disabled]="!pedidoSeleccionado || !hasPatchPermission">
+      Editar Pedido
+    </button>
+
+    <!-- Botón condicionado por permiso 'deleteOrder' y selección -->
+    <button class="btn btn-danger" 
+            (click)="eliminarPedido()" 
+            [disabled]="!pedidoSeleccionado || !hasDeletePermission">
+      Eliminar Pedido
+    </button>
+
+    <!-- Botón condicionado por permiso 'createOrder' -->
+    <button class="btn btn-primary" 
+            (click)="agregarPedido()" 
+            [disabled]="!hasCreatePermission">
+      Agregar Pedido
+    </button>
+  </div>
+</div>
+
+@if (isLoading) {
+  <div class="loading-message">
+    <p>Cargando pedidos, por favor espera...</p>
+  </div>
+}
+
+@if (errorMessage) {
+  <div class="error-message alert alert-danger" role="alert">
+    <p>Error: {{ errorMessage }}</p>
+    <button (click)="cargarPedidos()" class="btn btn-primary mt-2">Reintentar</button>
+  </div>
+}
+
+@if (!isLoading && !errorMessage) {
+  <div class="table-container">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>ID Pedido</th>
+          <th>Estado</th>
+          <th>Delivery</th>
+          <th>Dirección</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(pedido of pedidos; track pedido.id){
+          <tr (click)="seleccionarPedido(pedido)" [class.selected]="pedido === pedidoSeleccionado">
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.status }}</td>
+            <td>{{ pedido.delivery || 'No asignado' }}</td>
+            <td>
+              {{ pedido.location.street }} {{ pedido.location.number }},
+              Ciudad ID: {{ pedido.location.cityId }}
+            </td>
+          </tr>
+        }
+        @empty {
+          <tr>
+            <td colspan="4" class="text-center">No hay pedidos para mostrar.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="pagination-container">
+      <button class="pagination-btn"
+              (click)="cambiarPagina(-1)"
+              [disabled]="paginaActual === 1 || isLoading">
+        Anterior
+      </button>
+
+      @if (pedidos.length > 0) {
+        <span class="ms-3 me-3">
+          Página actual: {{ paginaActual }}
+        </span>
+      } @else if (pedidos.length === 0 && !isLoading && !errorMessage) {
+        <span class="ms-3 me-3">
+          Sin resultados para la página actual.
+        </span>
+      }
+
+      <button class="pagination-btn"
+              (click)="cambiarPagina(1)"
+              [disabled]="!hayMasPaginas || isLoading">
+        Siguiente
+      </button>
+    </div>
+  </div>
+}
+
+<div class="back-button-container">
+  <button class="btn btn-secondary" (click)="volverAtras()">
+    Volver
+  </button>
+</div>
+
