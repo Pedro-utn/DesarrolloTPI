@@ -9,7 +9,7 @@ import { AuthHelper } from '../middleware/auth.helper';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('OrderService', () => {
-  //Antes que nada, mapeamos los métodos a los mocks
+  //Antes que nada, mapeamos los servicios a los mocks
   let service: OrderService;
   let orderRepo: jest.Mocked<Repository<Order>>;
   let locationRepo: jest.Mocked<Repository<Location>>;
