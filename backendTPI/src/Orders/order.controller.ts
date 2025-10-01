@@ -14,7 +14,8 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from './order';
-import { AuthGuard, Permissions } from '../middleware/auth.middleware';
+import { AuthGuard } from 'src/middleware/auth.middleware';
+import { Permissions } from 'src/middleware/auth.middleware';
 
 @UseGuards(AuthGuard) 
 @Controller('order')

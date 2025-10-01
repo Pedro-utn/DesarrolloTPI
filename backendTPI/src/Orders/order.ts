@@ -48,6 +48,6 @@ export class Order {
   @Column({ default: 'pending' })
   status: string;
 
-  @Column({ type: 'boolean', default: false })
-  delivery: boolean;
+  @Column({ nullable: true })
+  delivery: number;
 }
